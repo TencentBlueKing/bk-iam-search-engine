@@ -1,0 +1,256 @@
+definitions:
+  gin.H:
+    additionalProperties: true
+    type: object
+  types.Action:
+    properties:
+      id:
+        example: edit
+        type: string
+    required:
+    - id
+    type: object
+  types.Resource:
+    items:
+      $ref: '#/definitions/types.ResourceNode'
+    type: array
+  types.ResourceNode:
+    properties:
+      attribute:
+        additionalProperties: true
+        type: object
+      id:
+        example: framework
+        type: string
+      system:
+        example: bk_paas
+        type: string
+      type:
+        example: app
+        type: string
+    required:
+    - attribute
+    - id
+    - system
+    - type
+    type: object
+  types.SearchRequest:
+    properties:
+      action:
+        $ref: '#/definitions/types.Action'
+        type: object
+      limit:
+        description: '! we don''t support pagination, we can only fetch limit subjects
+          at once'
+        example: 10
+        type: integer
+      nowTimestamp:
+        type: integer
+      resource:
+        $ref: '#/definitions/types.Resource'
+        type: object
+      subject_type:
+        example: all
+        type: string
+      system:
+        example: bk_paas
+        type: string
+    required:
+    - action
+    - resource
+    - subject_type
+    - system
+    type: object
+info:
+  contact: {}
+  description: 蓝鲸权限中心后台 engine 服务 API 文档
+  license: {}
+  title: IAM-Search-Engine API
+  version: "1.0"
+paths:
+  /api/v1/batch-search:
+    post:
+      consumes:
+      - application/json
+      description: batch search the subjects who have the permission of that system/action/resource
+      operationId: api-batch-search
+      parameters:
+      - description: the list request
+        in: body
+        name: params
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/types.SearchRequest'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              description: the request id
+              type: string
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - AppCode: []
+      - AppSecret: []
+      summary: batch search subjects by system/action/resource
+      tags:
+      - api
+  /api/v1/full-sync:
+    post:
+      consumes:
+      - application/json
+      description: trigger iam search engine full sync task
+      operationId: api-full-sync
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              description: the request id
+              type: string
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - AppCode: []
+      - AppSecret: []
+      summary: trigger iam search engine full sync task
+      tags:
+      - api
+  /api/v1/search:
+    post:
+      consumes:
+      - application/json
+      description: search the subjects who have the permission of that system/action/resource
+      operationId: api-search
+      parameters:
+      - description: the list request
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/types.SearchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              description: the request id
+              type: string
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - AppCode: []
+      - AppSecret: []
+      summary: search subjects by system/action/resource
+      tags:
+      - api
+  /api/v1/stats:
+    get:
+      consumes:
+      - application/json
+      description: get iam search engine stats
+      operationId: api-stats
+      parameters:
+      - description: System ID
+        in: path
+        name: system
+        type: string
+      - description: Action ID
+        in: path
+        name: action
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              description: the request id
+              type: string
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - AppCode: []
+      - AppSecret: []
+      summary: get iam search engine stats
+      tags:
+      - api
+  /healthz:
+    get:
+      consumes:
+      - application/json
+      description: /healthz to make sure the server is health
+      operationId: healthz
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              description: the request id
+              type: string
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: healthz for server health check
+      tags:
+      - basic
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: /ping to get response from iam, make sure the server is alive
+      operationId: ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              description: the request id
+              type: string
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: ping-pong for alive test
+      tags:
+      - basic
+  /version:
+    get:
+      consumes:
+      - application/json
+      description: /version to get the version of iam
+      operationId: version
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              description: the request id
+              type: string
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: version for identify
+      tags:
+      - basic
+swagger: "2.0"

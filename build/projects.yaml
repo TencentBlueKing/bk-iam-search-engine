@@ -1,0 +1,7 @@
+- name: server
+  module: bkiam_engine
+  project_dir: bkiam_engine
+  alias: iam_engine
+  language: binary
+  version: 1.0.0
+  version_type: ee
