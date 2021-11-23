@@ -1,0 +1,73 @@
+debug: false
+
+server:
+  host: __LAN_IP__
+  port: __BK_IAM_SEARCH_ENGINE_PORT__
+
+  readTimeout: 300
+  writeTimeout: 300
+  idleTimeout: 180
+
+sentry:
+  enable: false
+  dsn: ""
+
+superAppCode: "__BK_IAM_SAAS_APP_CODE__"
+
+cryptos:
+  apigateway_public_key:
+    key: "__BK_APIGATEWAY_PUBLIC_KEY__"
+
+storage:
+  path: "__BK_IAM_SEARCH_ENGINE_STORAGE_PATH__"  # iam engine的本地存储目录路径, 用于存储持久化数据, 需要读写权限
+
+index:
+  elasticsearch:
+    indexName: iam_policy
+    addresses:
+      - http://__BK_IAM_SEARCH_ENGINE_ES_HOST__:__BK_IAM_SEARCH_ENGINE_ES_PORT__
+    username: "__BK_IAM_SEARCH_ENGINE_ES_USER__"
+    password: "__BK_IAM_SEARCH_ENGINE_ES_PASSWORD__"
+    maxRetries: 3
+
+backend:
+    addr: "__BK_IAM_PRIVATE_URL__"
+    authorization:
+      appCode: "__BK_IAM_SAAS_APP_CODE__"
+      appSecret: "__BK_IAM_SAAS_APP_SECRET__"
+
+redis:
+  id: "standalone"
+  addr: "__BK_IAM_SAAS_REDIS_ADDR__"
+  password: "__BK_IAM_SAAS_REDIS_PASSWORD__"
+  db: 0
+  poolSize: 160
+  dialTimeout: 3
+  readTimeout: 1
+  writeTimeout: 1
+
+redisKeys:
+  - id: "delete_queue_key"
+    key: "bk_iam:deleted_policy"
+
+logger:
+  system:
+    level: debug
+    writer: file
+    settings: {name: iam_search_engine.log, size: 100, backups: 10, age: 7, path: __BK_HOME__/logs/bkiam_search_engine/}
+  sync:
+    level: info
+    writer: file
+    settings: {name: iam_search_engine_sync.log, size: 100, backups: 10, age: 7, path: __BK_HOME__/logs/bkiam_search_engine/}
+  es:
+    level: info
+    writer: file
+    settings: {name: iam_search_engine_es.log, size: 100, backups: 10, age: 7, path: __BK_HOME__/logs/bkiam_search_engine/}
+  api:
+    level: info
+    writer: file
+    settings: {name: iam_search_engine_api.log, size: 100, backups: 10, age: 7, path: __BK_HOME__/logs/bkiam_search_engine/}
+  component:
+    level: info
+    writer: file
+    settings: {name: iam_search_engine_component.log, size: 100, backups: 10, age: 7, path: __BK_HOME__/logs/bkiam_search_engine/}

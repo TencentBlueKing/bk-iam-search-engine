@@ -58,19 +58,19 @@ logger:
     settings: {name: stdout}
     # level: info
     # writer: file
-    # settings: {name: iam_engine_sync.log, size: 100, backups: 10, age: 7, path: ./}
+    # settings: {name: iam_search_engine_sync.log, size: 100, backups: 10, age: 7, path: ./}
   es:
     level: debug
     writer: os
     settings: {name: stdout}
     # level: info
     # writer: file
-    # settings: {name: iam_engine_es.log, size: 100, backups: 10, age: 7, path: ./}
+    # settings: {name: iam_search_engine_es.log, size: 100, backups: 10, age: 7, path: ./}
   api:
     level: info
     writer: file
-    settings: {name: iam_engine_api.log, size: 100, backups: 10, age: 7, path: ./}
+    settings: {name: iam_search_engine_api.log, size: 100, backups: 10, age: 7, path: ./}
   component:
     level: info
     writer: file
-    settings: {name: iam_engine_component.log, size: 100, backups: 10, age: 7, path: ./}
+    settings: {name: iam_search_engine_component.log, size: 100, backups: 10, age: 7, path: ./}
