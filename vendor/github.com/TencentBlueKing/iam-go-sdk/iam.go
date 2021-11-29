@@ -1,7 +1,7 @@
 /*
- * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS
- * Community Edition) available.
- * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * TencentBlueKing is pleased to support the open source community by making
+ * 蓝鲸智云-权限中心Go SDK(iam-go-sdk) available.
+ * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
@@ -32,27 +32,38 @@ type IAM struct {
 	appCode   string
 	appSecret string
 
-	bkIAMHost  string
-	bkPaaSHost string
+	client client.IAMBackendClient
 
-	iamBackendClient client.IAMBackendClient
+	// TODO: remove this after all changed to APIGateway
 	esbClient        client.ESBClient
 }
 
 // NewIAM will create an IAM instance
+// if your TencentBlueking has a APIGateway, use NewAPIGatewayIAM
 func NewIAM(system string, appCode, appSecret, bkIAMHost, bkPaaSHost string) *IAM {
-
-	iamBackendClient := client.NewIAMBackendClient(bkIAMHost, system, appCode, appSecret)
+	iamBackendClient := client.NewIAMBackendClient(bkIAMHost, false, system, appCode, appSecret)
 	esbClient := client.NewESBClient(bkPaaSHost, appCode, appSecret)
 
 	return &IAM{
-		appCode:    appCode,
-		appSecret:  appSecret,
-		bkIAMHost:  bkIAMHost,
-		bkPaaSHost: bkPaaSHost,
+		appCode:   appCode,
+		appSecret: appSecret,
 
-		iamBackendClient: iamBackendClient,
+		client: iamBackendClient,
 		esbClient:        esbClient,
+	}
+}
+
+// NewAPIGatewayIAM will create an IAM instance, call all api through APIGateway
+// if your TencentBlueking has a APIGateway, use this, recommend
+func NewAPIGatewayIAM(system string, appCode, appSecret, bkAPIGatewayURL string) *IAM {
+	apigatewayClient := client.NewIAMBackendClient(bkAPIGatewayURL, true, system, appCode, appSecret)
+
+	return &IAM{
+		appCode:   appCode,
+		appSecret: appSecret,
+
+		client: apigatewayClient,
+		esbClient:        nil,
 	}
 }
 
@@ -69,7 +80,7 @@ func (i *IAM) IsAllowed(request Request) (allowed bool, err error) {
 
 	// 2. policy query
 	logger.Debugf("the request: %v", request)
-	data, err := i.iamBackendClient.PolicyQuery(request)
+	data, err := i.client.PolicyQuery(request)
 	if err != nil {
 		logger.Errorf("do policy query fail! err=%w", err)
 		return
@@ -135,7 +146,7 @@ func (i *IAM) BatchIsAllowed(request Request, resourcesList []Resources) (result
 		request.Resources = Resources{}
 	}
 
-	data, err := i.iamBackendClient.PolicyQuery(request)
+	data, err := i.client.PolicyQuery(request)
 	if err != nil {
 		return
 	}
@@ -182,7 +193,7 @@ func (i *IAM) ResourceMultiActionsAllowed(request MultiActionRequest) (result ma
 
 	// 2. batch action policy query
 	logger.Debugf("the request: %v", request)
-	data, err := i.iamBackendClient.PolicyQueryByActions(request)
+	data, err := i.client.PolicyQueryByActions(request)
 	if err != nil {
 		logger.Errorf("do policy query by actions fail! err=%w", err)
 		return
@@ -226,7 +237,7 @@ func (i *IAM) BatchResourceMultiActionsAllowed(
 
 	// 3. batch action policy query
 	logger.Debugf("the request: %v", request)
-	data, err := i.iamBackendClient.PolicyQueryByActions(request)
+	data, err := i.client.PolicyQueryByActions(request)
 	if err != nil {
 		logger.Errorf("do policy query by actions fail! err=%w", err)
 		return
@@ -259,7 +270,7 @@ func (i *IAM) BatchResourceMultiActionsAllowed(
 
 // GetToken will get the token of system
 func (i *IAM) GetToken() (token string, err error) {
-	return i.iamBackendClient.GetToken()
+	return i.client.GetToken()
 }
 
 // IsBasicAuthAllowed will check basic auth of callback request
@@ -269,7 +280,7 @@ func (i *IAM) IsBasicAuthAllowed(username, password string) (err error) {
 		return
 	}
 
-	token, err := i.iamBackendClient.GetToken()
+	token, err := i.client.GetToken()
 	if err != nil {
 		err = fmt.Errorf("get system token fail: %w", err)
 		return
@@ -296,7 +307,13 @@ func (i *IAM) GetApplyURL(application Application, bkToken string, bkUsername st
 		return
 	}
 
-	url, err = i.esbClient.GetApplyURL(bkToken, bkUsername, application)
+	if i.esbClient != nil {
+		url, err = i.esbClient.GetApplyURL(bkToken, bkUsername, application)
+	} else {
+		// if use apigateway
+		url, err = i.client.GetApplyURL(application)
+	}
+
 	return
 }
 
