@@ -10,7 +10,6 @@
 <a title="Chat Room" target="_blank" href="https://gitter.im/ants-pool/ants?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/ants-pool/ants.svg" /></a>
 <a title="Go Report Card" target="_blank" href="https://goreportcard.com/report/github.com/panjf2000/ants"><img src="https://goreportcard.com/badge/github.com/panjf2000/ants?style=flat-square" /></a>
 <a title="Doc for ants" target="_blank" href="https://pkg.go.dev/github.com/panjf2000/ants/v2?tab=doc"><img src="https://img.shields.io/badge/go.dev-doc-007d9c?style=flat-square&logo=read-the-docs" /></a>
-<a title="Ants on Sourcegraph" target="_blank" href="https://sourcegraph.com/github.com/panjf2000/ants?badge"><img src="https://sourcegraph.com/github.com/panjf2000/ants/-/badge.svg?style=flat-square" /></a>
 <a title="Mentioned in Awesome Go" target="_blank" href="https://github.com/avelino/awesome-go#goroutines"><img src="https://awesome.re/mentioned-badge-flat.svg" /></a>
 </p>
 
@@ -29,15 +28,9 @@
 - 资源复用，极大节省内存使用量；在大规模批量并发任务场景下比原生 goroutine 并发具有[更高的性能](#-性能小结)
 - 非阻塞机制
 
-## ⚔️ 目前测试通过的Golang版本：
+## ⚔️ 目前测试通过的 Golang 版本：
 
-- 1.8.x
-- 1.9.x
-- 1.10.x
-- 1.11.x
-- 1.12.x
-- 1.13.x
-- 1.14.x
+从 **Go 1.8.x** 到 **Go 1.16.x** 的所有版本。
 
 ## 💡 `ants` 是如何运行的
 
@@ -336,7 +329,7 @@ pool.Reboot()
 
 以下公司/组织在生产环境上使用了 `ants`。
 
-<a href="https://www.tencent.com"><img src="https://img.taohuawu.club/gallery/tencent_logo.png" width="250" align="middle"/></a>&nbsp;&nbsp;<a href="https://www.sina.com.cn/" target="_blank"><img src="https://img.taohuawu.club/gallery/sina-logo.png" width="150" align="middle"/></a>&nbsp;&nbsp;<a href="https://www.163.com/" target="_blank"><img src="https://img.taohuawu.club/gallery/netease-logo.png" width="150" align="middle"/></a>&nbsp;&nbsp;<a href="https://tieba.baidu.com/" target="_blank"><img src="https://img.taohuawu.club/gallery/baidu-tieba-logo.png" width="250" align="middle"/></a>
+<a href="https://www.tencent.com"><img src="https://img.taohuawu.club/gallery/tencent_logo.png" width="250" align="middle"/></a>&nbsp;&nbsp;<a href="https://www.bytedance.com/" target="_blank"><img src="https://img.taohuawu.club/gallery/ByteDance_Logo.png" width="250" align="middle"/></a>&nbsp;&nbsp;<a href="https://tieba.baidu.com/" target="_blank"><img src="https://img.taohuawu.club/gallery/baidu-tieba-logo.png" width="300" align="middle"/></a>&nbsp;&nbsp;<a href="https://www.sina.com.cn/" target="_blank"><img src="https://img.taohuawu.club/gallery/sina-logo.png" width="200" align="middle"/></a>&nbsp;&nbsp;<a href="https://www.163.com/" target="_blank"><img src="https://img.taohuawu.club/gallery/netease-logo.png" width="150" align="middle"/></a>&nbsp;&nbsp;<a href="https://www.tencentmusic.com/" target="_blank"><img src="https://img.taohuawu.club/gallery/tencent-music-logo.png" width="250" align="middle"/></a>&nbsp;&nbsp;<a href="https://www.futuhk.com/" target="_blank"><img src="https://img.taohuawu.club/gallery/futu-logo.png" width="250" align="middle"/></a>
 
 如果你的项目也在使用 `ants`，欢迎给我提 Pull Request 来更新这份用户案例列表。
 
