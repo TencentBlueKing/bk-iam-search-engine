@@ -20,7 +20,7 @@ storage:
 index:
   elasticsearch:
     indexName: iam_policy
-    address:
+    addresses:
       - http://localhost:9200
     username: ""
     password: ""
