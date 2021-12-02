@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -70,7 +70,7 @@ var (
 
 	// SyncTaskDuration 同步任务时长分布
 	SyncTaskDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name:        "bkiam_se_sync_task_duration_seconds",
+		Name:        "bkiam_sync_task_duration_seconds",
 		Help:        "How long it took to process the sync task, partitioned by type.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 		Buckets:     []float64{1, 5, 10, 20, 50, 100, 1000, 2000, 5000},
@@ -80,7 +80,7 @@ var (
 
 	// EsSearchDuration ElasticSearch request duration
 	EsSearchDuration = prometheus.NewHistogram(prometheus.HistogramOpts{
-		Name:        "bkiam_se_es_search_duration_milliseconds",
+		Name:        "bkiam_es_search_duration_milliseconds",
 		Help:        "How long it took to process es search.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 		Buckets:     []float64{20, 50, 100, 200, 500, 1000, 2000, 5000},
@@ -88,7 +88,7 @@ var (
 
 	// SnapshotDumpFail 当前这次同步失败了, 检测到直接告警
 	SnapshotDumpFail = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name:        "bkiam_se_snapshot_dump_fail",
+		Name:        "bkiam_snapshot_dump_fail",
 		Help:        "Fail point of snapshot dump.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 	})
