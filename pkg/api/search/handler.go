@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -61,7 +61,8 @@ func search(c *gin.Context) {
 	}
 
 	req.NowTimestamp = time.Now().Unix()
-	for _, rn := range req.Resource {
+	for i := range req.Resource {
+		rn := &req.Resource[i]
 		if rn.Attribute == nil {
 			rn.Attribute = make(map[string]interface{})
 		}
@@ -123,7 +124,8 @@ func batchSearch(c *gin.Context) {
 
 	now := time.Now().Unix()
 	for _, req := range body {
-		for _, rn := range req.Resource {
+		for i := range req.Resource {
+			rn := &req.Resource[i]
 			if rn.Attribute == nil {
 				rn.Attribute = make(map[string]interface{})
 			}
