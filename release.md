@@ -1,3 +1,8 @@
+# 1.0.4
+
+- update: search request limit max 1000
+- bugfix: search request resource attribute nil bug
+
 # 1.0.3
 
 - update: change metrics name with prefix bkiam_
