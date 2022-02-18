@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -20,6 +20,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"engine/pkg/metric"
+	"engine/pkg/util"
 )
 
 // Metrics ...
@@ -39,12 +40,17 @@ func Metrics() gin.HandlerFunc {
 		// clientID := util.GetClientID(c)
 		status := strconv.Itoa(c.Writer.Status())
 
+		e := "0"
+		if _, hasError := util.GetError(c); hasError {
+			e = "1"
+		}
+
 		// request count
 		metric.RequestCount.With(prometheus.Labels{
 			"method":    c.Request.Method,
 			"path":      c.Request.URL.Path,
 			"status":    status,
-			"error":     "0",
+			"error":     e,
 			"client_id": clientID,
 		}).Inc()
 
