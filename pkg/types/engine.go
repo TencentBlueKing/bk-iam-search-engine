@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -50,7 +50,7 @@ type SearchRequest struct {
 
 	SubjectType string `json:"subject_type" binding:"required,oneof=all group user" example:"all"`
 	// ! we don't support pagination, we can only fetch limit subjects at once
-	Limit int `json:"limit" binding:"min=-1" example:"10"`
+	Limit int `json:"limit" binding:"min=-1,max=1000" example:"10"`
 
 	NowTimestamp int64
 }
