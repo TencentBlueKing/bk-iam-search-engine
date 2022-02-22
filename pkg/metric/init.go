@@ -23,7 +23,7 @@ var (
 	// RequestCount api状态计数 + server_ip的请求数量和状态
 	RequestCount = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name:        "bkiam_engine_api_requests_total",
+			Name:        "bkiam_search_engine_api_requests_total",
 			Help:        "How many HTTP requests processed, partitioned by status code, method and HTTP path.",
 			ConstLabels: prometheus.Labels{"service": serviceName},
 		},
@@ -32,7 +32,7 @@ var (
 
 	// RequestDuration api响应时间分布
 	RequestDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name:        "bkiam_engine_api_request_duration_milliseconds",
+		Name:        "bkiam_search_engine_api_request_duration_milliseconds",
 		Help:        "How long it took to process the request, partitioned by status code, method and HTTP path.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 		Buckets:     []float64{50, 100, 200, 500, 1000, 2000, 5000},
@@ -42,7 +42,7 @@ var (
 
 	// ClientRequestDuration 依赖 api 响应时间分布
 	ClientRequestDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name:        "bkiam_engine_client_request_duration_milliseconds",
+		Name:        "bkiam_search_engine_client_request_duration_milliseconds",
 		Help:        "How long it took to process the request, partitioned by status code, method and HTTP path.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 		Buckets:     []float64{20, 50, 100, 200, 500, 1000, 2000, 5000},
@@ -52,7 +52,7 @@ var (
 
 	// LastSyncTimestamp 记录最后更新时间戳 => 告警事项: 某个实例多久没有成功同步
 	LastSyncTimestamp = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name:        "bkiam_engine_last_sync_timestamp",
+		Name:        "bkiam_search_engine_last_sync_timestamp",
 		Help:        "Timestamp of last sync task.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 	},
@@ -61,7 +61,7 @@ var (
 
 	// SyncFail 当前这次同步失败了, 检测到直接告警
 	SyncFail = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name:        "bkiam_engine_sync_fail",
+		Name:        "bkiam_search_engine_sync_fail",
 		Help:        "Fail point of sync task.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 	},
@@ -70,7 +70,7 @@ var (
 
 	// SyncTaskDuration 同步任务时长分布
 	SyncTaskDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name:        "bkiam_engine_sync_task_duration_seconds",
+		Name:        "bkiam_search_engine_sync_task_duration_seconds",
 		Help:        "How long it took to process the sync task, partitioned by type.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 		Buckets:     []float64{1, 5, 10, 20, 50, 100, 1000, 2000, 5000},
@@ -80,7 +80,7 @@ var (
 
 	// EsSearchDuration ElasticSearch request duration
 	EsSearchDuration = prometheus.NewHistogram(prometheus.HistogramOpts{
-		Name:        "bkiam_engine_es_search_duration_milliseconds",
+		Name:        "bkiam_search_engine_es_search_duration_milliseconds",
 		Help:        "How long it took to process es search.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 		Buckets:     []float64{20, 50, 100, 200, 500, 1000, 2000, 5000},
@@ -88,7 +88,7 @@ var (
 
 	// SnapshotDumpFail 当前这次同步失败了, 检测到直接告警
 	SnapshotDumpFail = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name:        "bkiam_engine_snapshot_dump_fail",
+		Name:        "bkiam_search_engine_snapshot_dump_fail",
 		Help:        "Fail point of snapshot dump.",
 		ConstLabels: prometheus.Labels{"service": serviceName},
 	})
