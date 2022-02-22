@@ -1,6 +1,6 @@
 # 1.0.5
 
-- update: change metrics name with prefix bkiam_engine_
+- update: change metrics name with prefix bkiam_search_engine_
 
 # 1.0.4
 
