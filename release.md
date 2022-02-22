@@ -1,3 +1,7 @@
+# 1.0.5
+
+- update: change metrics name with prefix bkiam_engine_
+
 # 1.0.4
 
 - update: search request limit max 1000
