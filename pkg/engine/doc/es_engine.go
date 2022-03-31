@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -32,7 +32,7 @@ func genDocQuery(req *types.SearchRequest) types.H {
 			// if  x._bk_iam_path_ starts_with /biz,1/cluster,2/ =>  x._bk_iam_path_ in [/biz,1/, /biz,1/cluster,2/]
 			if key == types.BkIAMPathKey {
 				paths := generateBkIAMPathList(value)
-				term := fmt.Sprintf("resource.%s.%s.%s.keyword", system, resourceNode.Type, key)
+				term := fmt.Sprintf("resource.%s.%s.%s", system, resourceNode.Type, key)
 				for _, path := range paths {
 					sqs = append(sqs, types.H{
 						"term": types.H{term: path},
@@ -41,12 +41,7 @@ func genDocQuery(req *types.SearchRequest) types.H {
 				continue
 			}
 
-			// 除了bk iam path以外的属性不能确定value类型, 判断是string再加上 keyword
 			fieldName := fmt.Sprintf("resource.%s.%s.%s", system, resourceNode.Type, key)
-			_, ok := value.(string)
-			if ok {
-				fieldName = fieldName + ".keyword"
-			}
 			sqs = append(sqs, types.H{
 				"term": types.H{fieldName: value},
 			})
@@ -77,15 +72,15 @@ func genDocQuery(req *types.SearchRequest) types.H {
 				},
 			},
 		},
-		types.H{"term": types.H{"system.keyword": system}},
-		types.H{"term": types.H{"action.id.keyword": action}},
-		types.H{"term": types.H{"type.keyword": string(types.Doc)}},
+		types.H{"term": types.H{"system": system}},
+		types.H{"term": types.H{"action.id": action}},
+		types.H{"term": types.H{"type": string(types.Doc)}},
 	}
 
 	// filter the subject not the req.SubjectType
 	if req.SubjectType != types.SubjectTypeAll {
 		must = append(must, types.H{
-			"term": types.H{"subject.type.keyword": req.SubjectType},
+			"term": types.H{"subject.type": req.SubjectType},
 		})
 	}
 
@@ -154,8 +149,8 @@ func genSubjectsBoolCondition(subjects []types.Subject) types.H {
 		sq := types.H{
 			"bool": types.H{
 				"must": []interface{}{
-					types.H{"term": types.H{"subject.type.keyword": subject.Type}},
-					types.H{"term": types.H{"subject.id.keyword": subject.ID}},
+					types.H{"term": types.H{"subject.type": subject.Type}},
+					types.H{"term": types.H{"subject.id": subject.ID}},
 				},
 			},
 		}
@@ -189,15 +184,15 @@ func genAnyQuery(req *types.SearchRequest) types.H {
 				},
 			},
 		},
-		types.H{"term": types.H{"system.keyword": system}},
-		types.H{"term": types.H{"action.id.keyword": action}},
-		types.H{"term": types.H{"type.keyword": string(types.Any)}},
+		types.H{"term": types.H{"system": system}},
+		types.H{"term": types.H{"action.id": action}},
+		types.H{"term": types.H{"type": string(types.Any)}},
 	}
 
 	// filter the subject not the req.SubjectType
 	if req.SubjectType != types.SubjectTypeAll {
 		filter = append(filter, types.H{
-			"term": types.H{"subject.type.keyword": req.SubjectType},
+			"term": types.H{"subject.type": req.SubjectType},
 		})
 	}
 

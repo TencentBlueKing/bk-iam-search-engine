@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -175,8 +175,8 @@ func (e *EsEngine) getActionCount(system, action string) (int, error) {
 		"query": types.H{
 			"bool": types.H{
 				"filter": []interface{}{
-					types.H{"term": types.H{"system.keyword": system}},
-					types.H{"term": types.H{"action.id.keyword": action}},
+					types.H{"term": types.H{"system": system}},
+					types.H{"term": types.H{"action.id": action}},
 				},
 			},
 		},
