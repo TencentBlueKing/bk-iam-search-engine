@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -288,7 +288,22 @@ func creatIndexIfNotExists(cfg *config.Index) error {
 	}
 
 	if resp.StatusCode == http.StatusNotFound {
-		_, err = esClient.CreateIndex(cfg.ElasticSearch.IndexName)
+		// 动态mapping, match string 类型时索引转换为 keyword 类型
+		mapping := `{
+			"mappings": {
+				"dynamic_templates": [
+					{
+						"strings": {
+							"match_mapping_type": "string",
+							"mapping": {
+								"type": "keyword"
+							}
+						}
+					}
+				]
+			}
+		}`
+		_, err = esClient.CreateIndex(cfg.ElasticSearch.IndexName, mapping)
 		if err != nil {
 			return fmt.Errorf("create index: [%s] error:%w", cfg.ElasticSearch.IndexName, err)
 		}

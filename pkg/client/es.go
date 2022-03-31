@@ -481,23 +481,7 @@ func (c *EsClient) Ping() (*esapi.Response, error) {
 }
 
 // CreateIndex ...
-func (c *EsClient) CreateIndex(index string) (*esapi.Response, error) {
-	// 动态mapping, match string 类型时索引转换为 keyword 类型
-	mapping := `{
-		"mappings": {
-			"dynamic_templates": [
-				{
-					"strings": {
-						"match_mapping_type": "string",
-						"mapping": {
-							"type": "keyword"
-						}
-					}
-				}
-			]
-		}
-	}`
-
+func (c *EsClient) CreateIndex(index string, mapping string) (*esapi.Response, error) {
 	return c.client.Indices.Create(index, func(req *esapi.IndicesCreateRequest) {
 		req.Body = strings.NewReader(mapping)
 	})
