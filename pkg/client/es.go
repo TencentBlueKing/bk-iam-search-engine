@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
@@ -480,8 +481,10 @@ func (c *EsClient) Ping() (*esapi.Response, error) {
 }
 
 // CreateIndex ...
-func (c *EsClient) CreateIndex(index string) (*esapi.Response, error) {
-	return c.client.Indices.Create(index)
+func (c *EsClient) CreateIndex(index string, mapping string) (*esapi.Response, error) {
+	return c.client.Indices.Create(index, func(req *esapi.IndicesCreateRequest) {
+		req.Body = strings.NewReader(mapping)
+	})
 }
 
 // IndexExists ...
