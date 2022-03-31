@@ -25,9 +25,9 @@ index:
   elasticsearch:
     indexName: iam_policy
     addresses:
-      - http://__BK_IAM_SEARCH_ENGINE_ES_HOST__:__BK_IAM_SEARCH_ENGINE_ES_PORT__
-    username: "__BK_IAM_SEARCH_ENGINE_ES_USER__"
-    password: "__BK_IAM_SEARCH_ENGINE_ES_PASSWORD__"
+      - http://__BK_IAM_SEARCH_ENGINE_ES7_HOST__:__BK_IAM_SEARCH_ENGINE_ES7_PORT__
+    username: "__BK_IAM_SEARCH_ENGINE_ES7_USER__"
+    password: "__BK_IAM_SEARCH_ENGINE_ES7_PASSWORD__"
     maxRetries: 3
 
 backend:

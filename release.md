@@ -1,3 +1,7 @@
+# 1.0.6
+
+- bugfix: create index use dynamic_templates
+
 # 1.0.5
 
 - update: change metrics name with prefix bkiam_search_engine_
