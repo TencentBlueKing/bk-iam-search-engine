@@ -73,20 +73,6 @@ func genDocQuery(req *types.SearchRequest) types.H {
 		}
 	}
 
-	// action.id = create or actions.id = create
-	actionSubQuery := types.H{
-		"bool": types.H{
-			"should": []types.H{
-				{
-					"action.id": action,
-				},
-				{
-					"actions.id": action,
-				},
-			},
-		},
-	}
-
 	must := []interface{}{
 		subQuery,
 		types.H{
@@ -97,8 +83,9 @@ func genDocQuery(req *types.SearchRequest) types.H {
 			},
 		},
 		types.H{"term": types.H{"system": system}},
-		actionSubQuery,
+		// action.id = create or actions.id = create
 		// types.H{"term": types.H{"action.id": action}},
+		genActionSubQuery(action),
 		types.H{"term": types.H{"type": string(types.Doc)}},
 	}
 
@@ -210,7 +197,8 @@ func genAnyQuery(req *types.SearchRequest) types.H {
 			},
 		},
 		types.H{"term": types.H{"system": system}},
-		types.H{"term": types.H{"action.id": action}},
+		// types.H{"term": types.H{"action.id": action}},
+		genActionSubQuery(action),
 		types.H{"term": types.H{"type": string(types.Any)}},
 	}
 

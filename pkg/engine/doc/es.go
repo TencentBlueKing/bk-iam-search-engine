@@ -177,14 +177,7 @@ func (e *EsEngine) getActionCount(system, action string) (int, error) {
 				"filter": []interface{}{
 					types.H{"term": types.H{"system": system}},
 					// types.H{"term": types.H{"action.id": action}},
-					types.H{
-						"bool": types.H{
-							"should": []types.H{
-								{"action.id": action},
-								{"actions.id": action},
-							},
-						},
-					},
+					genActionSubQuery(action),
 				},
 			},
 		},

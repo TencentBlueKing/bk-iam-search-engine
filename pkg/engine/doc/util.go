@@ -99,7 +99,7 @@ func splitBKIAMPathIntoNodes(value string) (nodes []string) {
 	// /biz,1/set,2/module,3/host,4/
 	parts := strings.Split(value, "/")
 	for _, part := range parts {
-		nodes =append(nodes, "/" +  strings.Trim(part, "/") + "/")
+		nodes = append(nodes, "/"+strings.Trim(part, "/")+"/")
 	}
 	return nodes
 }
@@ -179,3 +179,14 @@ func makeDoc(docType types.ExpressionType, policy *types.Policy) (map[string]int
 }
 
 type esSearchQueryFunc func(req *types.SearchRequest) types.H
+
+func genActionSubQuery(action string) types.H {
+	return types.H{
+		"bool": types.H{
+			"should": []types.H{
+				{"action.id": action},
+				{"actions.id": action},
+			},
+		},
+	}
+}
