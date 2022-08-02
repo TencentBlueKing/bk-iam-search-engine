@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -17,6 +17,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/TencentBlueKing/gopkg/collection/set"
 	"github.com/panjf2000/ants/v2"
 	"github.com/sirupsen/logrus"
 
@@ -99,19 +100,18 @@ func fullSync(idx *Indexer, logger *logrus.Entry) error {
 		idx.BulkAdd(policies)
 
 		// 404 or expired, should be deleted
-		existedPIDs := util.NewFixedLengthInt64Set(len(policies))
+		existedPIDs := set.NewFixedLengthInt64Set(len(policies))
 		for _, p := range policies {
 			existedPIDs.Add(p.ID)
 		}
 
-		batchDeleteIDs := util.NewInt64Set()
+		batchDeleteIDs := set.NewInt64Set()
 		for i := args.BeginID; i <= args.EndID; i++ {
 			if !existedPIDs.Has(i) {
 				batchDeleteIDs.Add(i)
 			}
 		}
 		idx.BulkDelete(batchDeleteIDs.ToSlice())
-
 	}, ants.WithExpiryDuration(2*time.Second))
 	defer p.Release()
 

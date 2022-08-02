@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/TencentBlueKing/gopkg/collection/set"
 	log "github.com/sirupsen/logrus"
 
 	"engine/pkg/client"
@@ -26,7 +27,6 @@ import (
 	"engine/pkg/expression"
 	"engine/pkg/logging/debug"
 	"engine/pkg/types"
-	"engine/pkg/util"
 )
 
 // Index ...
@@ -67,7 +67,7 @@ func NewIndex(cfg *config.Index) (*Index, error) {
 // Search ...
 func (i *Index) Search(ctx context.Context, req *types.SearchRequest, entry *debug.Entry) ([]types.Subject, error) {
 	subjects := make([]types.Subject, 0, 5)
-	allowedSubjectUIDs := util.NewFixedLengthStringSet(10)
+	allowedSubjectUIDs := set.NewFixedLengthStringSet(10)
 
 	// 记录debug上下文
 	debug.WithValues(entry, types.H{
@@ -232,7 +232,11 @@ func (i *Index) TotalStats() map[string]uint64 {
 }
 
 // BatchSearch ...
-func (i *Index) BatchSearch(ctx context.Context, requests []*types.SearchRequest, entry *debug.Entry) ([][]types.Subject, error) {
+func (i *Index) BatchSearch(
+	ctx context.Context,
+	requests []*types.SearchRequest,
+	entry *debug.Entry,
+) ([][]types.Subject, error) {
 	// TODO: did timeout
 	ctx, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
 	defer cancel()
@@ -246,7 +250,7 @@ func (i *Index) BatchSearch(ctx context.Context, requests []*types.SearchRequest
 
 	for idx, req := range requests {
 		subjects := make([]types.Subject, 0, 5)
-		allowedSubjectUIDs := util.NewFixedLengthStringSet(10)
+		allowedSubjectUIDs := set.NewFixedLengthStringSet(10)
 
 		esQuerySubjects := esSearchResults[idx]
 		subjects = append(subjects, esQuerySubjects.GetSubjects(allowedSubjectUIDs)...)

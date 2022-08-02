@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -19,11 +19,11 @@ import (
 )
 
 var _ = Describe("Expression", func() {
-
 	var anyExpr expression.ExprCell
 	var eqExpr expression.ExprCell
 	var inExpr expression.ExprCell
 	var startsWithExpr expression.ExprCell
+	var stringContainsExpr expression.ExprCell
 	var andExpr expression.ExprCell
 	var orExpr expression.ExprCell
 	var gtExpr expression.ExprCell
@@ -50,6 +50,11 @@ var _ = Describe("Expression", func() {
 			Field: "host._bk_iam_path_",
 			Value: "/biz,1/set,*/",
 		}
+		stringContainsExpr = expression.ExprCell{
+			OP:    operator.StringContains,
+			Field: "host._bk_iam_path_",
+			Value: "/biz,1/",
+		}
 
 		andExpr = expression.ExprCell{
 			OP:      operator.AND,
@@ -66,7 +71,6 @@ var _ = Describe("Expression", func() {
 			Field: "box.size",
 			Value: "123",
 		}
-
 	})
 
 	Describe("indexer.isAny", func() {
@@ -91,7 +95,6 @@ var _ = Describe("Expression", func() {
 		})
 
 		Describe("false", func() {
-
 			It("starts_with", func() {
 				assert.False(GinkgoT(), isSingleEqOrIn(&startsWithExpr))
 			})
@@ -107,7 +110,6 @@ var _ = Describe("Expression", func() {
 	Describe("indexer.isBkIAMPathStartsWith", func() {
 		It("true", func() {
 			assert.True(GinkgoT(), isBkIAMPathStartsWith(&startsWithExpr))
-
 		})
 
 		It("false", func() {
@@ -115,12 +117,23 @@ var _ = Describe("Expression", func() {
 			assert.False(GinkgoT(), isBkIAMPathStartsWith(&inExpr))
 			assert.False(GinkgoT(), isBkIAMPathStartsWith(&anyExpr))
 			assert.False(GinkgoT(), isBkIAMPathStartsWith(&andExpr))
+		})
+	})
 
+	Describe("indexer.isBkIAMPathStringContains", func() {
+		It("true", func() {
+			assert.True(GinkgoT(), isBkIAMPathStringContains(&stringContainsExpr))
+		})
+
+		It("false", func() {
+			assert.False(GinkgoT(), isBkIAMPathStringContains(&eqExpr))
+			assert.False(GinkgoT(), isBkIAMPathStringContains(&inExpr))
+			assert.False(GinkgoT(), isBkIAMPathStringContains(&anyExpr))
+			assert.False(GinkgoT(), isBkIAMPathStringContains(&andExpr))
 		})
 	})
 
 	Describe("indexer.isAllOR", func() {
-
 		Describe("false", func() {
 			It("OP.AND", func() {
 				assert.False(GinkgoT(), isAllOR(&andExpr))
@@ -154,7 +167,6 @@ var _ = Describe("Expression", func() {
 				}
 				assert.False(GinkgoT(), isAllOR(&expr))
 			})
-
 		})
 
 		It("OP.others", func() {
@@ -249,7 +261,6 @@ var _ = Describe("Expression", func() {
 				assert.True(GinkgoT(), isSameObjectWithDifferentFields(&expr))
 			})
 		})
-
 	})
 
 	Describe("indexer.flattenORExpr", func() {
@@ -295,9 +306,7 @@ var _ = Describe("Expression", func() {
 
 			result := flattenORExpr(expr)
 			assert.Len(GinkgoT(), result, 3)
-
 		})
-
 	})
 
 	Describe("indexer.mergeORExpressions", func() {
@@ -323,7 +332,6 @@ var _ = Describe("Expression", func() {
 				assert.Equal(GinkgoT(), operator.StartsWith, result.OP)
 				assert.Equal(GinkgoT(), startsWithExpr.Field, result.Field)
 				assert.Equal(GinkgoT(), []interface{}{startsWithExpr.Value}, result.Value)
-
 			})
 
 			It("gt", func() {
@@ -331,7 +339,6 @@ var _ = Describe("Expression", func() {
 				assert.Equal(GinkgoT(), operator.Gt, result.OP)
 				assert.Equal(GinkgoT(), gtExpr.Field, result.Field)
 				assert.Equal(GinkgoT(), []interface{}{gtExpr.Value}, result.Value)
-
 			})
 		})
 
@@ -420,11 +427,9 @@ var _ = Describe("Expression", func() {
 				assert.Equal(GinkgoT(), "host.id", result.Field)
 				assert.Equal(GinkgoT(), []interface{}{"123", "456", "789"}, result.Value)
 			})
-
 		})
 
 		Describe("unmerged", func() {
-
 			It("1 eq, 1 starts_with", func() {
 				expr1 := expression.ExprCell{
 					OP:    operator.Eq,
@@ -460,7 +465,6 @@ var _ = Describe("Expression", func() {
 				assert.Len(GinkgoT(), result.Content, 2)
 				assert.Contains(GinkgoT(), result.Content, wantExpr1)
 				assert.Contains(GinkgoT(), result.Content, wantExpr2)
-
 			})
 
 			It("different attrs", func() {
@@ -491,13 +495,10 @@ var _ = Describe("Expression", func() {
 				assert.Contains(GinkgoT(), result.Content, expr1)
 				assert.Contains(GinkgoT(), result.Content, wantExpr2)
 			})
-
 		})
-
 	})
 
 	Describe("indexer.flattenAndMergeAllOR", func() {
-
 		It("not all OR", func() {
 			result := flattenAndMergeAllOR(andExpr)
 			assert.Equal(GinkgoT(), andExpr, result)
@@ -513,7 +514,5 @@ var _ = Describe("Expression", func() {
 			assert.Equal(GinkgoT(), operator.OR, result.OP)
 			assert.Len(GinkgoT(), result.Content, 2)
 		})
-
 	})
-
 })

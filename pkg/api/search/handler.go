@@ -14,6 +14,7 @@ package search
 import (
 	"time"
 
+	"github.com/TencentBlueKing/gopkg/collection/set"
 	"github.com/gin-gonic/gin"
 
 	"engine/pkg/indexer"
@@ -43,7 +44,6 @@ import (
 // @Security AppSecret
 // @Router /api/v1/search [post]
 func search(c *gin.Context) {
-
 	var req types.SearchRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		util.BadRequestErrorJSONResponse(c, util.ValidationErrorMessage(err))
@@ -109,7 +109,7 @@ func batchSearch(c *gin.Context) {
 	// check system
 	clientID := util.GetClientID(c)
 	if !isSuperClient(clientID) {
-		systemIDs := util.NewStringSet()
+		systemIDs := set.NewStringSet()
 		for _, req := range body {
 			systemIDs.Add(req.System)
 		}

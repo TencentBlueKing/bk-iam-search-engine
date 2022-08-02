@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -16,12 +16,15 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/TencentBlueKing/gopkg/collection/set"
 	"github.com/TencentBlueKing/iam-go-sdk/expression"
 	"github.com/TencentBlueKing/iam-go-sdk/expression/operator"
 
 	"engine/pkg/types"
-	"engine/pkg/util"
 )
+
+// FIXME: 这里应该合并 isSingleEqOrIn / isBkIAMPathStartsWith / isBKIAMPathStringContains
+// FIXME: 如果是单个number cmp, 也应该是simple的, 未来表达式中加入需要支持
 
 // isAny will check the expression, return true if only one expression with operator `any`
 func isAny(expr *expression.ExprCell) bool {
@@ -36,6 +39,10 @@ func isSingleEqOrIn(expr *expression.ExprCell) bool {
 // isBkIAMPathStartsWith will check the expression, return true if `obj._bk_iam_path starts_with x`
 func isBkIAMPathStartsWith(expr *expression.ExprCell) bool {
 	return expr.OP == operator.StartsWith && strings.HasSuffix(expr.Field, types.BkIAMPathSuffix)
+}
+
+func isBkIAMPathStringContains(expr *expression.ExprCell) bool {
+	return expr.OP == operator.StringContains && strings.HasSuffix(expr.Field, types.BkIAMPathSuffix)
 }
 
 // isAllOR will check the expression, return true if all the expression in content or nested expression are `OR`
@@ -79,7 +86,7 @@ func isSameObjectWithDifferentFields(expr *expression.ExprCell) bool {
 		return false
 	}
 
-	set := util.NewStringSet()
+	s := set.NewStringSet()
 	for _, c := range expr.Content {
 		// currently, only can merge into same object
 		// 1. eq
@@ -100,11 +107,11 @@ func isSameObjectWithDifferentFields(expr *expression.ExprCell) bool {
 		//     - 其他操作符号怎么办? 目前 eq/in/starts_with特殊处理的
 		//     - 未来, field结构改变了, 会变成什么样子的?
 		parts := strings.Split(c.Field, ".")
-		set.Add(parts[0])
+		s.Add(parts[0])
 	}
 
 	// size == 1 表示是同一个对象
-	return set.Size() == 1
+	return s.Size() == 1
 }
 
 // flattenORExpr will flat the nested OR expression into flatten expression list.

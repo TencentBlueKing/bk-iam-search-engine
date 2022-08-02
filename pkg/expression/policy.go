@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -20,8 +20,8 @@ import (
 // SplitPoliciesWithExpressionType ...
 func SplitPoliciesWithExpressionType(policies []types.Policy) (
 	evalPolicies []*types.Policy,
-	esPolicies []*types.Policy) {
-
+	esPolicies []*types.Policy,
+) {
 	if len(policies) == 0 {
 		return
 	}
@@ -49,8 +49,9 @@ func SplitPoliciesWithExpressionType(policies []types.Policy) (
 			continue
 		}
 
-		// 2. `biz.id eq 1` 及 `biz.id in [1,2,3]`;   `biz._bk_iam_path_ starts_with x`
-		if isSingleEqOrIn(&p.Expression) || isBkIAMPathStartsWith(&p.Expression) {
+		// 2. `biz.id eq 1` 及 `biz.id in [1,2,3]`;   `biz._bk_iam_path_ starts_with x` ;   `biz._bk_iam_path_ string_contains x`
+		if isSingleEqOrIn(&p.Expression) || isBkIAMPathStartsWith(&p.Expression) ||
+			isBkIAMPathStringContains(&p.Expression) {
 			p.ExpressionType = types.Doc
 			esPolicies = append(esPolicies, &p)
 			continue
@@ -61,8 +62,8 @@ func SplitPoliciesWithExpressionType(policies []types.Policy) (
 		if isAllOR(&p.Expression) {
 			expr := flattenAndMergeAllOR(p.Expression)
 
-			// 3.1 打平后如果是  eq / in / _bk_iam_path_ starts_with
-			if isSingleEqOrIn(&expr) || isBkIAMPathStartsWith(&expr) {
+			// 3.1 打平后如果是  eq / in / _bk_iam_path_ starts_with / _bk_iam_path_ string_contains
+			if isSingleEqOrIn(&expr) || isBkIAMPathStartsWith(&expr) || isBkIAMPathStringContains(&expr) {
 				p.Expression = expr
 				p.ExpressionType = types.Doc
 				esPolicies = append(esPolicies, &p)

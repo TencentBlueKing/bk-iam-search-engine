@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -11,10 +11,25 @@
 
 package components
 
+import (
+	"os"
+
+	log "github.com/sirupsen/logrus"
+)
+
+const (
+	policyAPITypeAbac = "abac"
+	policyAPITypeRbac = "rbac"
+)
+
 var (
 	globalIAMHost   = ""
 	globalAppCode   = ""
 	globalAppSecret = ""
+
+	// NOTE: we want to use the same config file, but different instance, so here we use env
+	// api param type={engineAPIType}
+	policyAPIType = "abac"
 )
 
 // InitComponentClients ...
@@ -22,6 +37,12 @@ func InitComponentClients(iamHost string, appCode string, appSecret string) {
 	globalIAMHost = iamHost
 	globalAppCode = appCode
 	globalAppSecret = appSecret
+
+	policyAPITypeFromEnv := os.Getenv("POLICY_API_TYPE")
+	if policyAPITypeFromEnv == policyAPITypeAbac || policyAPITypeFromEnv == policyAPITypeRbac {
+		policyAPIType = policyAPITypeFromEnv
+	}
+	log.Infof("init Component with policyAPIType=%s", policyAPIType)
 }
 
 // NewIAMClient ...

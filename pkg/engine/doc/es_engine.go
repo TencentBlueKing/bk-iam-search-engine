@@ -29,8 +29,8 @@ func genDocQuery(req *types.SearchRequest) types.H {
 	for _, resourceNode := range req.Resource {
 		for key, value := range resourceNode.Attribute {
 			// 如果key是 _bk_iam_path_ 那么需要 拆分成多个 OR 关系去直接匹配(不走前缀匹配)
-			// if  x._bk_iam_path_ starts_with /biz,1/cluster,2/ =>  x._bk_iam_path_ in [/biz,1/, /biz,1/cluster,2/]
 			if key == types.BkIAMPathKey {
+				// if  x._bk_iam_path_ starts_with /biz,1/cluster,2/ =>  x._bk_iam_path_ in [/biz,1/, /biz,1/cluster,2/]
 				paths := generateBkIAMPathList(value)
 				term := fmt.Sprintf("resource.%s.%s.%s", system, resourceNode.Type, key)
 				for _, path := range paths {
@@ -38,6 +38,16 @@ func genDocQuery(req *types.SearchRequest) types.H {
 						"term": types.H{term: path},
 					})
 				}
+
+				// if x._bk_iam_path_ starts_with /biz,1/cluster,2/ =>  x._bk_iam_path_contains_ in [/biz,1/, /cluster,2/]
+				nodes := generateBkIAMPathNodes(value)
+				containsTerm := fmt.Sprintf("resource.%s.%s.%s", system, resourceNode.Type, types.BkIAMPathContainsKey)
+				for _, node := range nodes {
+					sqs = append(sqs, types.H{
+						"term": types.H{containsTerm: node},
+					})
+				}
+
 				continue
 			}
 
@@ -63,6 +73,20 @@ func genDocQuery(req *types.SearchRequest) types.H {
 		}
 	}
 
+	// action.id = create or actions.id = create
+	actionSubQuery := types.H{
+		"bool": types.H{
+			"should": []types.H{
+				{
+					"action.id": action,
+				},
+				{
+					"actions.id": action,
+				},
+			},
+		},
+	}
+
 	must := []interface{}{
 		subQuery,
 		types.H{
@@ -73,7 +97,8 @@ func genDocQuery(req *types.SearchRequest) types.H {
 			},
 		},
 		types.H{"term": types.H{"system": system}},
-		types.H{"term": types.H{"action.id": action}},
+		actionSubQuery,
+		// types.H{"term": types.H{"action.id": action}},
 		types.H{"term": types.H{"type": string(types.Doc)}},
 	}
 

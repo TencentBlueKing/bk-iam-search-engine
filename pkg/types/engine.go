@@ -16,9 +16,9 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/TencentBlueKing/gopkg/collection/set"
 
 	"engine/pkg/logging/debug"
-	"engine/pkg/util"
 )
 
 // SubjectTypeAll ...
@@ -76,5 +76,5 @@ type Engine interface {
 
 // SearchResult ...
 type SearchResult interface {
-	GetSubjects(allowedSubjectUIDs *util.StringSet) []Subject
+	GetSubjects(allowedSubjectUIDs *set.StringSet) []Subject
 }

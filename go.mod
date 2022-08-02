@@ -3,7 +3,8 @@ module engine
 go 1.16
 
 require (
-	github.com/TencentBlueKing/iam-go-sdk v0.0.5
+	github.com/TencentBlueKing/gopkg v1.0.8
+	github.com/TencentBlueKing/iam-go-sdk v0.0.9
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/cenkalti/backoff/v4 v4.1.2
 	github.com/elastic/go-elasticsearch/v7 v7.15.1

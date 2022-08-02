@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -12,15 +12,15 @@
 package config
 
 import (
-	"engine/pkg/util"
+	"github.com/TencentBlueKing/gopkg/collection/set"
 )
 
 // SuperAppCodeSet ...
 var (
-	SuperAppCodeSet *util.StringSet
+	SuperAppCodeSet *set.StringSet
 )
 
 // InitSuperAppCode ...
 func InitSuperAppCode(superAppCode string) {
-	SuperAppCodeSet = util.SplitStringToSet(superAppCode, ",")
+	SuperAppCodeSet = set.SplitStringToSet(superAppCode, ",")
 }

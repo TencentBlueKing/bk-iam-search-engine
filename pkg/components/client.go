@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/TencentBlueKing/gopkg/conv"
 	"github.com/TencentBlueKing/iam-go-sdk/client"
 	"github.com/TencentBlueKing/iam-go-sdk/logger"
 	"github.com/TencentBlueKing/iam-go-sdk/util"
@@ -63,7 +64,7 @@ func (r *IAMBackendBaseResponse) Error() error {
 
 // String will return the detail text of the response
 func (r *IAMBackendBaseResponse) String() string {
-	return fmt.Sprintf("response[code=`%d`, message=`%s`, data=`%s`]", r.Code, r.Message, util.BytesToString(r.Data))
+	return fmt.Sprintf("response[code=`%d`, message=`%s`, data=`%s`]", r.Code, r.Message, conv.BytesToString(r.Data))
 }
 
 // IAMBackendClient is the interface of iam backend client
@@ -217,6 +218,7 @@ func (c *iamBackendClient) GetMaxIDBeforeUpdate(updatedAt int64) (int64, error) 
 	path := "/api/v1/engine/policies/ids/max"
 	query := map[string]interface{}{
 		"updated_at": updatedAt,
+		"type":       policyAPIType,
 	}
 
 	data, err := c.callWithReturnMapData(GET, path, query, 10)
@@ -241,6 +243,7 @@ func (c *iamBackendClient) ListPolicyIDBetweenUpdateAt(
 	query := map[string]interface{}{
 		"begin_updated_at": beginUpdatedAt,
 		"end_updated_at":   endUpdatedAt,
+		"type":             policyAPIType,
 	}
 	data, err := c.callWithReturnMapData(GET, path, query, 10)
 	if err != nil {
@@ -267,6 +270,7 @@ func (c *iamBackendClient) ListPolicyBetweenID(
 		"timestamp": timestamp,
 		"min_id":    minID,
 		"max_id":    maxID,
+		"type":      policyAPIType,
 	}
 
 	data, err := c.callWithReturnMapData(GET, path, query, 10)
@@ -287,7 +291,8 @@ func (c *iamBackendClient) ListPolicyBetweenID(
 func (c *iamBackendClient) ListPolicyByIDs(ids []int64) ([]types.Policy, error) {
 	path := "/api/v1/engine/policies"
 	query := map[string]interface{}{
-		"ids": util.Int64ArrayToString(ids, ","),
+		"ids":  util.Int64ArrayToString(ids, ","),
+		"type": policyAPIType,
 	}
 	data, err := c.callWithReturnMapData(GET, path, query, 10)
 	if err != nil {
