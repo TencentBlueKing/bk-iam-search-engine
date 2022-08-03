@@ -15,8 +15,8 @@ import (
 	"context"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/TencentBlueKing/gopkg/collection/set"
+	log "github.com/sirupsen/logrus"
 
 	"engine/pkg/logging/debug"
 )
@@ -62,7 +62,6 @@ type Engine interface {
 
 	BulkDelete(ids []int64, logger *log.Entry) error
 	BulkDeleteBySubjects(beforeUpdatedAt int64, subjects []Subject, logger *log.Entry) error
-	BulkDeleteByTemplateSubjects(beforeUpdatedAt int64, templateID int64, subjects []Subject, logger *log.Entry) error
 
 	Search(ctx context.Context, req *SearchRequest, entry *debug.Entry) (SearchResult, error)
 	BatchSearch(ctx context.Context, requests []*SearchRequest, entry *debug.Entry) (results []SearchResult, err error)

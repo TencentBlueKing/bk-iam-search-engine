@@ -162,14 +162,6 @@ func (e *EsEngine) BulkDeleteBySubjects(beforeUpdatedAt int64, subjects []types.
 	return e.deleteByQuery(query, logger)
 }
 
-// BulkDeleteByTemplateSubjects ...
-func (e *EsEngine) BulkDeleteByTemplateSubjects(
-	beforeUpdatedAt int64, templateID int64, subjects []types.Subject, logger *log.Entry,
-) error {
-	query := genTemplateSubjectsQuery(beforeUpdatedAt, templateID, subjects)
-	return e.deleteByQuery(query, logger)
-}
-
 func (e *EsEngine) getActionCount(system, action string) (int, error) {
 	query := types.H{
 		"query": types.H{

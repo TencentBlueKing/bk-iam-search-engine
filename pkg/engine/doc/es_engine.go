@@ -131,30 +131,6 @@ func genSubjectsQuery(timestamp int64, subjects []types.Subject) types.H {
 	return query
 }
 
-// genTemplateSubjectsQuery ...
-func genTemplateSubjectsQuery(timestamp int64, templateID int64, subjects []types.Subject) types.H {
-	subQuery := genSubjectsBoolCondition(subjects)
-	query := types.H{
-		"query": types.H{
-			"bool": types.H{
-				"must": []interface{}{
-					types.H{"term": types.H{"template_id": templateID}},
-					subQuery,
-					types.H{
-						"range": types.H{
-							"updated_at": types.H{
-								"lt": timestamp,
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-
-	return query
-}
-
 func genSubjectsBoolCondition(subjects []types.Subject) types.H {
 	var sqs []types.H
 	for _, subject := range subjects {

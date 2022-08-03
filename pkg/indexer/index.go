@@ -202,23 +202,6 @@ func (i *Index) BulkDeleteBySubjects(beforeUpdatedAt int64, subjects []types.Sub
 	}
 }
 
-// BulkDeleteBySubjects ...
-func (i *Index) BulkDeleteByTemplateSubjects(
-	beforeUpdatedAt int64, templateID int64, subjects []types.Subject, logger *log.Entry,
-) {
-	if len(subjects) == 0 {
-		return
-	}
-	err := i.EsEngine.BulkDeleteByTemplateSubjects(beforeUpdatedAt, templateID, subjects, logger)
-	if err != nil {
-		logger.WithError(err).Error("indexer BulkDeleteByTemplateSubjects EsEngine.BulkDeleteByTemplateSubjects error")
-	}
-	err = i.EvalEngine.BulkDeleteByTemplateSubjects(beforeUpdatedAt, templateID, subjects, logger)
-	if err != nil {
-		logger.WithError(err).Error("indexer BulkDeleteByTemplateSubjects EvalEngine.BulkDeleteBySubjects error")
-	}
-}
-
 // TotalStats ...
 func (i *Index) TotalStats() map[string]uint64 {
 	docSize := i.EsEngine.Total()

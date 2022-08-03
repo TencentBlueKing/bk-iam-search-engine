@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -9,11 +9,31 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package redis
+package task
 
-import "context"
+import (
+	"time"
 
-// RPop ...
-func RPop(key string) (string, error) {
-	return rds.RPop(context.TODO(), key).Result()
+	"engine/pkg/logging"
+
+	"github.com/adjust/rmq/v4"
+)
+
+func startRmqCleaner() {
+	logger := logging.GetSyncLogger()
+
+	cleaner := rmq.NewCleaner(connection)
+
+	// run every 2 minutes
+	for range time.Tick(2 * time.Minute) {
+		logger.Info("Clean rmq begin")
+
+		returned, err := cleaner.Clean()
+		if err != nil {
+			logger.Warnf("rmq failed to clean: %s", err)
+			continue
+		}
+		logger.Infof("rmq cleaned %d", returned)
+		logger.Info("Clean rmq end")
+	}
 }

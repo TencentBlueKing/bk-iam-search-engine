@@ -20,6 +20,9 @@ github.com/TencentBlueKing/iam-go-sdk/expression/operator
 github.com/TencentBlueKing/iam-go-sdk/logger
 github.com/TencentBlueKing/iam-go-sdk/metric
 github.com/TencentBlueKing/iam-go-sdk/util
+# github.com/adjust/rmq/v4 v4.0.5
+## explicit
+github.com/adjust/rmq/v4
 # github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 ## explicit
 github.com/alecthomas/template

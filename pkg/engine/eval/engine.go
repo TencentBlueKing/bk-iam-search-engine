@@ -165,17 +165,6 @@ func (e *EvalEngine) BulkDeleteBySubjects(beforeUpdatedAt int64, subjects []type
 	return nil
 }
 
-// BulkDeleteByTemplateSubjects ...
-func (e *EvalEngine) BulkDeleteByTemplateSubjects(
-	beforeUpdatedAt int64, templateID int64, subjects []types.Subject, logger *log.Entry,
-) error {
-	e.engineRange(func(engine *actionEvalEngine) {
-		engine.bulkDeleteByTemplateSubjects(beforeUpdatedAt, templateID, subjects)
-	})
-	e.lastIndexTime = time.Now()
-	return nil
-}
-
 // Total ...
 func (e *EvalEngine) Total() (size uint64) {
 	e.engineRange(func(engine *actionEvalEngine) {
@@ -398,18 +387,6 @@ func (e *actionEvalEngine) bulkDeleteBySubjects(beforeUpdatedAt int64, subjects 
 	subjectSet := toSubjectSet(subjects)
 	e.bulkDeleteByMatchFunc(func(policy *types.Policy) bool {
 		return subjectSet.Has(policy.Subject.UID) && policy.UpdatedAt < beforeUpdatedAt
-	})
-}
-
-// bulkDeleteByTemplateSubjects ...
-func (e *actionEvalEngine) bulkDeleteByTemplateSubjects(
-	beforeUpdatedAt int64, templateID int64, subjects []types.Subject,
-) {
-	subjectSet := toSubjectSet(subjects)
-	e.bulkDeleteByMatchFunc(func(policy *types.Policy) bool {
-		return policy.TemplateID == templateID &&
-			subjectSet.Has(policy.Subject.UID) &&
-			policy.UpdatedAt < beforeUpdatedAt
 	})
 }
 
