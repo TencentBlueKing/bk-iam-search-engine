@@ -63,14 +63,12 @@ func (e *SubjectsEvent) Delete(logger *logrus.Entry) {
 
 // DeleteSyncer ...
 type DeleteSyncer struct {
-	interval      int64 // second
 	onSuccessFunc func()
 }
 
 // NewDeleteSyncer ...
 func NewDeleteSyncer(interval int64) Syncer {
 	return &DeleteSyncer{
-		interval:      interval,
 		onSuccessFunc: func() {},
 	}
 }
@@ -90,11 +88,19 @@ func (s *DeleteSyncer) Start(ctx context.Context, idx *Indexer) {
 		"type":    "delete_sync",
 	})
 
-	entry.Infof("start a delete task with interval = %v seconds", s.interval)
+	log.Info("start delete sync......")
+
+	err := engineDeletionEventQueue.StartConsuming(100, 5*time.Second)
+	if err != nil {
+		log.WithError(err).Error("rmq queue start consuming fail")
+		panic(err)
+	}
+	log.Info("delete sync: rmq queue start consuming success")
 
 	engineDeletionEventQueue.AddConsumerFunc(rmqConsumerTag, func(delivery rmq.Delivery) {
 		// get message
 		payload := delivery.Payload()
+		entry.Debugf("consumer got a message: %s", payload)
 
 		// process
 		indexDeleteByEvent(idx, payload, entry)
@@ -104,15 +110,20 @@ func (s *DeleteSyncer) Start(ctx context.Context, idx *Indexer) {
 			entry.WithError(err).Errorf("rmq ack payload `%s` fail", payload)
 		}
 	})
+	log.Info("delete sync: rmq queue add consumer func success")
 
-	err := engineDeletionEventQueue.StartConsuming(100, 5*time.Second)
-	if err != nil {
-		log.WithError(err).Error("rmq queue start consuming fail")
-		panic(err)
-	}
-
-	<-ctx.Done()                    // wait for signal
-	<-connection.StopAllConsuming() // wait for all Consume() calls to finish
+	log.Info("delete sync started")
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				logger.Info("context done, the sync delete will stop running")
+				<-connection.StopAllConsuming() // wait for all Consume() calls to finish
+				log.Info("rmq queue stop consuming")
+				return
+			}
+		}
+	}()
 }
 
 func indexDeleteByEvent(idx *Indexer, eventString string, entry *logrus.Entry) {

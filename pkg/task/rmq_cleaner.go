@@ -15,25 +15,34 @@ import (
 	"time"
 
 	"engine/pkg/logging"
+	"engine/pkg/util"
 
 	"github.com/adjust/rmq/v4"
+	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 func startRmqCleaner() {
 	logger := logging.GetSyncLogger()
+	taskID := util.RandString(16)
+	entry := logger.WithFields(logrus.Fields{
+		"task_id": taskID,
+		"type":    "rmq_cleaner",
+	})
 
 	cleaner := rmq.NewCleaner(connection)
 
+	log.Info("start a rmq cleaner")
 	// run every 2 minutes
 	for range time.Tick(2 * time.Minute) {
-		logger.Info("Clean rmq begin")
+		entry.Info("clean rmq begin")
 
 		returned, err := cleaner.Clean()
 		if err != nil {
-			logger.Warnf("rmq failed to clean: %s", err)
+			entry.Warnf("rmq failed to clean: %s", err)
 			continue
 		}
-		logger.Infof("rmq cleaned %d", returned)
-		logger.Info("Clean rmq end")
+		entry.Infof("rmq cleaned %d", returned)
+		entry.Info("Clean rmq end")
 	}
 }
