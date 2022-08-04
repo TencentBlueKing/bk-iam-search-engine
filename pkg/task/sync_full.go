@@ -115,8 +115,17 @@ func fullSync(idx *Indexer, logger *logrus.Entry) error {
 	}, ants.WithExpiryDuration(2*time.Second))
 	defer p.Release()
 
+	// abac, begin 1
+	// rbac, begin 500000000
+	var beginID int
+	if components.PolicyAPIType == "rbac" {
+		beginID = components.PolicyRbacIDBegin
+	} else {
+		beginID = 1
+	}
+
 	// Submit tasks one by one.
-	for i := int64(1); i <= maxID; i += fullBatchSize {
+	for i := int64(beginID); i <= maxID; i += fullBatchSize {
 		beginID := i
 		endID := i + fullBatchSize
 		if endID > maxID {

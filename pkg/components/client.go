@@ -218,7 +218,7 @@ func (c *iamBackendClient) GetMaxIDBeforeUpdate(updatedAt int64) (int64, error) 
 	path := "/api/v1/engine/policies/ids/max"
 	query := map[string]interface{}{
 		"updated_at": updatedAt,
-		"type":       policyAPIType,
+		"type":       PolicyAPIType,
 	}
 
 	data, err := c.callWithReturnMapData(GET, path, query, 10)
@@ -243,7 +243,7 @@ func (c *iamBackendClient) ListPolicyIDBetweenUpdateAt(
 	query := map[string]interface{}{
 		"begin_updated_at": beginUpdatedAt,
 		"end_updated_at":   endUpdatedAt,
-		"type":             policyAPIType,
+		"type":             PolicyAPIType,
 	}
 	data, err := c.callWithReturnMapData(GET, path, query, 10)
 	if err != nil {
@@ -270,7 +270,7 @@ func (c *iamBackendClient) ListPolicyBetweenID(
 		"timestamp": timestamp,
 		"min_id":    minID,
 		"max_id":    maxID,
-		"type":      policyAPIType,
+		"type":      PolicyAPIType,
 	}
 
 	data, err := c.callWithReturnMapData(GET, path, query, 10)
@@ -292,7 +292,7 @@ func (c *iamBackendClient) ListPolicyByIDs(ids []int64) ([]types.Policy, error) 
 	path := "/api/v1/engine/policies"
 	query := map[string]interface{}{
 		"ids":  util.Int64ArrayToString(ids, ","),
-		"type": policyAPIType,
+		"type": PolicyAPIType,
 	}
 	data, err := c.callWithReturnMapData(GET, path, query, 10)
 	if err != nil {

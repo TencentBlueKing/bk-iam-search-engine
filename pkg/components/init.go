@@ -29,7 +29,8 @@ var (
 
 	// NOTE: we want to use the same config file, but different instance, so here we use env
 	// api param type={engineAPIType}
-	policyAPIType = "abac"
+	PolicyAPIType     = "abac"
+	PolicyRbacIDBegin = 500000000
 )
 
 // InitComponentClients ...
@@ -40,9 +41,9 @@ func InitComponentClients(iamHost string, appCode string, appSecret string) {
 
 	policyAPITypeFromEnv := os.Getenv("POLICY_API_TYPE")
 	if policyAPITypeFromEnv == policyAPITypeAbac || policyAPITypeFromEnv == policyAPITypeRbac {
-		policyAPIType = policyAPITypeFromEnv
+		PolicyAPIType = policyAPITypeFromEnv
 	}
-	log.Infof("init Component with policyAPIType=%s", policyAPIType)
+	log.Infof("init Component with policyAPIType=%s", PolicyAPIType)
 }
 
 // NewIAMClient ...
