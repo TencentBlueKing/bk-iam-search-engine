@@ -31,7 +31,6 @@ import (
 const (
 	TypePolicy  = "policy"
 	TypeSubject = "subject"
-	// TypeSubjectTemplate = "subject_template"
 )
 
 // Event ...
@@ -94,7 +93,7 @@ func (s *DeleteSyncer) Start(ctx context.Context, idx *Indexer) {
 	entry.Infof("start a delete task with interval = %v seconds", s.interval)
 
 	engineDeletionEventQueue.AddConsumerFunc(rmqConsumerTag, func(delivery rmq.Delivery) {
-		// parse message
+		// get message
 		payload := delivery.Payload()
 
 		// process
@@ -106,7 +105,7 @@ func (s *DeleteSyncer) Start(ctx context.Context, idx *Indexer) {
 		}
 	})
 
-	err := engineDeletionEventQueue.StartConsuming(10, time.Second)
+	err := engineDeletionEventQueue.StartConsuming(100, 5*time.Second)
 	if err != nil {
 		log.WithError(err).Error("rmq queue start consuming fail")
 		panic(err)

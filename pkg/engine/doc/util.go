@@ -96,10 +96,12 @@ func splitBKIAMPathIntoNodes(value string) (nodes []string) {
 		return
 	}
 
+	value = strings.Trim(value, "/")
+
 	// /biz,1/set,2/module,3/host,4/
 	parts := strings.Split(value, "/")
 	for _, part := range parts {
-		nodes = append(nodes, "/"+strings.Trim(part, "/")+"/")
+		nodes = append(nodes, "/"+part+"/")
 	}
 	return nodes
 }

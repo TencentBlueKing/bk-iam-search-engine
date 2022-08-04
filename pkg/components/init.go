@@ -11,26 +11,10 @@
 
 package components
 
-import (
-	"os"
-
-	log "github.com/sirupsen/logrus"
-)
-
-const (
-	policyAPITypeAbac = "abac"
-	policyAPITypeRbac = "rbac"
-)
-
 var (
 	globalIAMHost   = ""
 	globalAppCode   = ""
 	globalAppSecret = ""
-
-	// NOTE: we want to use the same config file, but different instance, so here we use env
-	// api param type={engineAPIType}
-	PolicyAPIType     = "abac"
-	PolicyRbacIDBegin = 500000000
 )
 
 // InitComponentClients ...
@@ -38,12 +22,6 @@ func InitComponentClients(iamHost string, appCode string, appSecret string) {
 	globalIAMHost = iamHost
 	globalAppCode = appCode
 	globalAppSecret = appSecret
-
-	policyAPITypeFromEnv := os.Getenv("POLICY_API_TYPE")
-	if policyAPITypeFromEnv == policyAPITypeAbac || policyAPITypeFromEnv == policyAPITypeRbac {
-		PolicyAPIType = policyAPITypeFromEnv
-	}
-	log.Infof("init Component with policyAPIType=%s", PolicyAPIType)
 }
 
 // NewIAMClient ...

@@ -36,4 +36,6 @@ iam-search-engine
 *.log
 
 last_sync_time.*
-snapshot.json
+snapshot.*
+
+.vscode

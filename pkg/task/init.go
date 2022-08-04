@@ -65,7 +65,7 @@ func InitRmqQueue(debugMode bool) {
 
 	if engineDeletionEventQueue == nil {
 		engineDeletionEventQueueInitOnce.Do(func() {
-			engineDeletionEventQueue, err = connection.OpenQueue("engine_deletion") // group_subject_action_delete
+			engineDeletionEventQueue, err = connection.OpenQueue("engine_deletion")
 			if err != nil {
 				log.WithError(err).Error("new rmq queue fail")
 				if !debugMode {
