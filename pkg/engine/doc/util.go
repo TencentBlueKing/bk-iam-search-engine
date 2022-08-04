@@ -181,14 +181,3 @@ func makeDoc(docType types.ExpressionType, policy *types.Policy) (map[string]int
 }
 
 type esSearchQueryFunc func(req *types.SearchRequest) types.H
-
-func genActionSubQuery(action string) types.H {
-	return types.H{
-		"bool": types.H{
-			"should": []types.H{
-				{"action.id": action},
-				{"actions.id": action},
-			},
-		},
-	}
-}

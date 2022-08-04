@@ -83,9 +83,7 @@ func genDocQuery(req *types.SearchRequest) types.H {
 			},
 		},
 		types.H{"term": types.H{"system": system}},
-		// action.id = create or actions.id = create
-		// types.H{"term": types.H{"action.id": action}},
-		genActionSubQuery(action),
+		types.H{"term": types.H{"actions.id": action}},
 		types.H{"term": types.H{"type": string(types.Doc)}},
 	}
 
@@ -173,8 +171,7 @@ func genAnyQuery(req *types.SearchRequest) types.H {
 			},
 		},
 		types.H{"term": types.H{"system": system}},
-		// types.H{"term": types.H{"action.id": action}},
-		genActionSubQuery(action),
+		types.H{"term": types.H{"actions.id": action}},
 		types.H{"term": types.H{"type": string(types.Any)}},
 	}
 
