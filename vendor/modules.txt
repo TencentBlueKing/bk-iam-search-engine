@@ -4,7 +4,12 @@ github.com/KyleBanks/depth
 github.com/PuerkitoBio/purell
 # github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578
 github.com/PuerkitoBio/urlesc
-# github.com/TencentBlueKing/iam-go-sdk v0.0.5
+# github.com/TencentBlueKing/gopkg v1.0.8
+## explicit
+github.com/TencentBlueKing/gopkg/collection/set
+github.com/TencentBlueKing/gopkg/conv
+github.com/TencentBlueKing/gopkg/stringx
+# github.com/TencentBlueKing/iam-go-sdk v0.0.9
 ## explicit
 github.com/TencentBlueKing/iam-go-sdk
 github.com/TencentBlueKing/iam-go-sdk/cache
@@ -15,6 +20,9 @@ github.com/TencentBlueKing/iam-go-sdk/expression/operator
 github.com/TencentBlueKing/iam-go-sdk/logger
 github.com/TencentBlueKing/iam-go-sdk/metric
 github.com/TencentBlueKing/iam-go-sdk/util
+# github.com/adjust/rmq/v4 v4.0.5
+## explicit
+github.com/adjust/rmq/v4
 # github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 ## explicit
 github.com/alecthomas/template

@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -23,17 +23,17 @@ import (
 	"engine/pkg/config"
 )
 
-var rds *redis.Client
+var mqRedisClient *redis.Client
 
-var redisClientInitOnce sync.Once
+var mqRedisClientInitOnce sync.Once
 
 // InitRedisClient ...
 func InitRedisClient(debugMode bool, redisConfig *config.Redis) {
-	if rds == nil {
-		redisClientInitOnce.Do(func() {
-			rds = newRedisClient(redisConfig)
+	if mqRedisClient == nil {
+		mqRedisClientInitOnce.Do(func() {
+			mqRedisClient = newRedisClient(redisConfig)
 
-			_, err := rds.Ping(context.TODO()).Result()
+			_, err := mqRedisClient.Ping(context.TODO()).Result()
 			if err != nil {
 				log.WithError(err).Error("connect to redis fail")
 				// redis is important
@@ -80,7 +80,19 @@ func newRedisClient(redisConfig *config.Redis) *redis.Client {
 
 	log.Infof(
 		"connect to redis: %s[dialTimeout=%s, readTimeout=%s, writeTimeout=%s, poolSize=%d, minIdleConns=%d, idleTimeout=%s]",
-		opt.Addr, opt.DialTimeout, opt.ReadTimeout, opt.WriteTimeout, opt.PoolSize, opt.MinIdleConns, opt.IdleTimeout)
+		opt.Addr,
+		opt.DialTimeout,
+		opt.ReadTimeout,
+		opt.WriteTimeout,
+		opt.PoolSize,
+		opt.MinIdleConns,
+		opt.IdleTimeout,
+	)
 
 	return redis.NewClient(opt)
+}
+
+// GetDefaultRedisClient 获取默认的Redis实例
+func GetDefaultMQRedisClient() *redis.Client {
+	return mqRedisClient
 }

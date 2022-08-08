@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -104,11 +104,12 @@ func StartSync(ctx context.Context, cfg *config.Config) {
 		if err1 != nil {
 			logger.WithError(err1).Error("storage.SyncSnapshotStorage.SetIncrSyncLastSyncTime fail")
 		}
-
 	}).Start(ctx, indexer)
 
 	// start delete event sync, will sync 5 seconds from now!
 	NewDeleteSyncer(5).Start(ctx, indexer)
+	// start rmq cleaner
+	go startRmqCleaner()
 
 	// start timing grap incr, will sync 24 hour from now!
 	NewTimingGapIncrSyncer(24*60*60, snapshot).Start(ctx, indexer)

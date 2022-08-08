@@ -14,27 +14,24 @@ package task
 import (
 	"context"
 	"encoding/json"
-	"engine/pkg/indexer"
-	"engine/pkg/logging"
-	"engine/pkg/redis"
-	"engine/pkg/types"
-	"engine/pkg/util"
 	"time"
 
-	rds "github.com/go-redis/redis/v8"
+	"engine/pkg/indexer"
+	"engine/pkg/logging"
+	"engine/pkg/types"
+	"engine/pkg/util"
+
+	"github.com/adjust/rmq/v4"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 // TypePolicy ...
 const (
-	TypePolicy          = "policy"
-	TypeSubject         = "subject"
-	TypeSubjectTemplate = "subject_template"
+	TypePolicy  = "policy"
+	TypeSubject = "subject"
 )
-
-// DeleteQueueKey ...
-var DeleteQueueKey string
 
 // Event ...
 type Event struct {
@@ -64,41 +61,14 @@ func (e *SubjectsEvent) Delete(logger *logrus.Entry) {
 	indexer.BulkDeleteBySubjects(e.Timestamp, e.Subjects, logger)
 }
 
-// TemplateSubjectEvent ...
-type TemplateSubjectEvent struct {
-	TemplateSubjects []TemplateSubject `json:"subject_templates"`
-	Timestamp        int64
-}
-
-// TemplateSubject ...
-type TemplateSubject struct {
-	Subject    types.Subject `json:"subject"`
-	TemplateID int64         `json:"template_id"`
-}
-
-// Delete ...
-func (e *TemplateSubjectEvent) Delete(logger *logrus.Entry) {
-	// NOTE 基于template的删除都是同一个模板, 不存在批量的情况
-	for _, templateSubject := range e.TemplateSubjects {
-		indexer.BulkDeleteByTemplateSubjects(
-			e.Timestamp,
-			templateSubject.TemplateID,
-			[]types.Subject{templateSubject.Subject},
-			logger,
-		)
-	}
-}
-
 // DeleteSyncer ...
 type DeleteSyncer struct {
-	interval      int64 // second
 	onSuccessFunc func()
 }
 
 // NewDeleteSyncer ...
 func NewDeleteSyncer(interval int64) Syncer {
 	return &DeleteSyncer{
-		interval:      interval,
 		onSuccessFunc: func() {},
 	}
 }
@@ -118,43 +88,42 @@ func (s *DeleteSyncer) Start(ctx context.Context, idx *Indexer) {
 		"type":    "delete_sync",
 	})
 
-	entry.Infof("start a delete task with interval = %v seconds", s.interval)
+	log.Info("start delete sync......")
 
-	ticker := time.NewTicker(time.Duration(s.interval) * time.Second)
+	err := engineDeletionEventQueue.StartConsuming(100, 5*time.Second)
+	if err != nil {
+		log.WithError(err).Error("rmq queue start consuming fail")
+		panic(err)
+	}
+	log.Info("delete sync: rmq queue start consuming success")
+
+	engineDeletionEventQueue.AddConsumerFunc(rmqConsumerTag, func(delivery rmq.Delivery) {
+		// get message
+		payload := delivery.Payload()
+		entry.Debugf("consumer got a message: %s", payload)
+
+		// process
+		indexDeleteByEvent(idx, payload, entry)
+
+		// ack
+		if err := delivery.Ack(); err != nil {
+			entry.WithError(err).Errorf("rmq ack payload `%s` fail", payload)
+		}
+	})
+	log.Info("delete sync: rmq queue add consumer func success")
+
+	log.Info("delete sync started")
 	go func() {
 		for {
 			select {
-			case <-ticker.C:
-
-				// 解析事件格式, 根据格式调用对应的方法
-				syncDeleteEvent(entry, idx)
-
-				s.onSuccessFunc()
 			case <-ctx.Done():
-				logger.Info("context done, the incr trigger will stop running")
-				ticker.Stop()
+				logger.Info("context done, the sync delete will stop running")
+				<-connection.StopAllConsuming() // wait for all Consume() calls to finish
+				log.Info("rmq queue stop consuming")
 				return
 			}
 		}
 	}()
-}
-
-func syncDeleteEvent(entry *logrus.Entry, idx *Indexer) {
-	// 一次最多消费1000条
-	for i := 0; i < deleteBatchSize; i++ {
-		eventString, err := redis.RPop(DeleteQueueKey)
-		if err != nil {
-			// list empty
-			if err == rds.Nil {
-				return
-			}
-			entry.Errorf("event pop error: %s", err.Error())
-			continue
-		}
-
-		// !!! 事件做持久化, 在Gap同步时可以考虑读取处理
-		indexDeleteByEvent(idx, eventString, entry)
-	}
 }
 
 func indexDeleteByEvent(idx *Indexer, eventString string, entry *logrus.Entry) {
@@ -171,10 +140,6 @@ func indexDeleteByEvent(idx *Indexer, eventString string, entry *logrus.Entry) {
 		data = &PolicyIDsEvent{}
 	case TypeSubject:
 		data = &SubjectsEvent{
-			Timestamp: event.Timestamp,
-		}
-	case TypeSubjectTemplate:
-		data = &TemplateSubjectEvent{
 			Timestamp: event.Timestamp,
 		}
 	default:

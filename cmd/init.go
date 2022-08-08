@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -87,7 +87,6 @@ func initSentryEventReport(sentryEnabled bool) {
 
 func initGlobalIndex() {
 	indexer.InitGlobalIndex(&globalConfig.Index)
-
 }
 
 func initCaches() {
@@ -102,10 +101,8 @@ func initRedis() {
 	redis.InitRedisClient(false, &globalConfig.Redis)
 }
 
-func initRedisKeys() {
-	keys := make(map[string]string, len(globalConfig.RedisKeys))
-	for _, redisKey := range globalConfig.RedisKeys {
-		keys[redisKey.ID] = redisKey.Key
-	}
-	task.InitDeleteQueueKey(keys)
+func initRmq() {
+	log.Info("init RMQ ")
+	task.InitRmqQueue(globalConfig.Debug)
+	log.Info("init RMQ success")
 }

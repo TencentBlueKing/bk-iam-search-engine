@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -60,13 +60,6 @@ func BulkDelete(ids []int64, logger *logrus.Entry) {
 // BulkDeleteBySubjects ...
 func BulkDeleteBySubjects(beforeUpdatedAt int64, subjects []types.Subject, logger *logrus.Entry) {
 	globalIndex.BulkDeleteBySubjects(beforeUpdatedAt, subjects, logger)
-}
-
-// BulkDeleteByTemplateSubjects ...
-func BulkDeleteByTemplateSubjects(
-	beforeUpdatedAt int64, templateID int64, subjects []types.Subject, logger *logrus.Entry,
-) {
-	globalIndex.BulkDeleteByTemplateSubjects(beforeUpdatedAt, templateID, subjects, logger)
 }
 
 // Search ...

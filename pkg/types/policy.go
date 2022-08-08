@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -12,19 +12,27 @@
 package types
 
 import (
+	"engine/pkg/util"
 	"fmt"
+	"strings"
 
+	"github.com/TencentBlueKing/gopkg/collection/set"
 	"github.com/TencentBlueKing/iam-go-sdk/expression"
 	jsoniter "github.com/json-iterator/go"
-
-	"engine/pkg/util"
 )
 
 // BkIAMPathSuffix ...
 const (
 	BkIAMPathSuffix = "._bk_iam_path_"
 	BkIAMPathKey    = "_bk_iam_path_"
+
+	BkIAMPathContainsSuffix = "._bk_iam_path_contains_"
+	BkIAMPathContainsKey    = "_bk_iam_path_contains_"
 )
+
+func ConvertBKIAMPathSuffixToBKIAMPathContainsSuffix(field string) string {
+	return strings.ReplaceAll(field, BkIAMPathSuffix, BkIAMPathContainsSuffix)
+}
 
 // ExpressionType ...
 type ExpressionType string
@@ -41,7 +49,7 @@ type Policy struct {
 	Version    string              `json:"version" mapstructure:"version"`
 	ID         int64               `json:"id" mapstructure:"id"`
 	System     string              `json:"system" mapstructure:"system"`
-	Action     Action              `json:"action" mapstructure:"action"`
+	Actions    []Action            `json:"actions" mapstructure:"actions"`
 	Subject    Subject             `json:"subject" mapstructure:"subject"`
 	TemplateID int64               `json:"template_id" mapstructure:"template_id"`
 	Expression expression.ExprCell `json:"expression" mapstructure:"expression"`
@@ -84,7 +92,7 @@ func (s *Subject) FillUID() {
 }
 
 // ResourceCountReachLimit ...
-func ResourceCountReachLimit(req *SearchRequest, allowedSubjectUIDs *util.StringSet) bool {
+func ResourceCountReachLimit(req *SearchRequest, allowedSubjectUIDs *set.StringSet) bool {
 	return req.Limit > 0 && allowedSubjectUIDs.Size() >= req.Limit
 }
 

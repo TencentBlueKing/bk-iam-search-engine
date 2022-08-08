@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -22,14 +22,8 @@ import (
 
 	"github.com/natefinch/atomic"
 
+	"engine/pkg/instance"
 	"engine/pkg/util"
-)
-
-const (
-	fullSyncFile = "last_sync_time.full"
-	incrSyncFile = "last_sync_time.incr"
-
-	snapshotFile = "snapshot.json"
 )
 
 // Storage ...
@@ -50,7 +44,7 @@ func NewStorage(dir string) *Storage {
 // GetFullSyncLastSyncTime ...
 func (s *Storage) GetFullSyncLastSyncTime() (ts int64, err error) {
 	s.fullMu.RLock()
-	ts, err = s.getLastSyncTime(fullSyncFile)
+	ts, err = s.getLastSyncTime(instance.GetFullSyncFileName())
 	s.fullMu.RUnlock()
 	return
 }
@@ -58,7 +52,7 @@ func (s *Storage) GetFullSyncLastSyncTime() (ts int64, err error) {
 // SetFullSyncLastSyncTime ...
 func (s *Storage) SetFullSyncLastSyncTime(lastSyncTs int64) (err error) {
 	s.fullMu.Lock()
-	err = s.setLastSyncTime(lastSyncTs, fullSyncFile)
+	err = s.setLastSyncTime(lastSyncTs, instance.GetFullSyncFileName())
 	s.fullMu.Unlock()
 	return err
 }
@@ -66,7 +60,7 @@ func (s *Storage) SetFullSyncLastSyncTime(lastSyncTs int64) (err error) {
 // GetIncrSyncLastSyncTime ...
 func (s *Storage) GetIncrSyncLastSyncTime() (ts int64, err error) {
 	s.incrMu.RLock()
-	ts, err = s.getLastSyncTime(incrSyncFile)
+	ts, err = s.getLastSyncTime(instance.GetIncrSyncFileName())
 	s.incrMu.RUnlock()
 	return
 }
@@ -74,7 +68,7 @@ func (s *Storage) GetIncrSyncLastSyncTime() (ts int64, err error) {
 // SetIncrSyncLastSyncTime ...
 func (s *Storage) SetIncrSyncLastSyncTime(lastSyncTs int64) (err error) {
 	s.incrMu.Lock()
-	err = s.setLastSyncTime(lastSyncTs, incrSyncFile)
+	err = s.setLastSyncTime(lastSyncTs, instance.GetIncrSyncFileName())
 	s.incrMu.Unlock()
 	return err
 }
@@ -82,7 +76,7 @@ func (s *Storage) SetIncrSyncLastSyncTime(lastSyncTs int64) (err error) {
 // SaveSnapshot ...
 func (s *Storage) SaveSnapshot(data []byte) error {
 	s.snapMu.Lock()
-	path := filepath.Join(s.dir, snapshotFile)
+	path := filepath.Join(s.dir, instance.GetSnapshotFileName())
 
 	// f, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	// if err != nil {
@@ -101,7 +95,7 @@ func (s *Storage) SaveSnapshot(data []byte) error {
 // GetSnapshot ...
 func (s *Storage) GetSnapshot() ([]byte, error) {
 	s.snapMu.RLock()
-	path := filepath.Join(s.dir, snapshotFile)
+	path := filepath.Join(s.dir, instance.GetSnapshotFileName())
 
 	bs, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -118,7 +112,7 @@ func (s *Storage) GetSnapshot() ([]byte, error) {
 
 // ExistSnapshot ...
 func (s *Storage) ExistSnapshot() bool {
-	path := filepath.Join(s.dir, snapshotFile)
+	path := filepath.Join(s.dir, instance.GetSnapshotFileName())
 
 	_, err := os.Stat(path)
 	if err == nil {
@@ -154,7 +148,7 @@ func (s *Storage) getLastSyncTime(fileName string) (int64, error) {
 func (s *Storage) setLastSyncTime(lastSyncTs int64, fileName string) (err error) {
 	path := filepath.Join(s.dir, fileName)
 
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0o644)
 	if err != nil {
 		return
 	}
