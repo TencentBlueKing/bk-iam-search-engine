@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -11,11 +11,73 @@
 
 package task
 
-// InitDeleteQueueKey ...
-func InitDeleteQueueKey(keys map[string]string) {
-	deleteQueueKey, ok := keys["delete_queue_key"]
-	if !ok {
-		panic("delete_queue_key not exists")
+import (
+	"sync"
+
+	"engine/pkg/redis"
+
+	"github.com/adjust/rmq/v4"
+	log "github.com/sirupsen/logrus"
+)
+
+const (
+	ConnTypeProducer = "producer"
+	ConnTypeConsumer = "consumer"
+	ConnTypeCleaner  = "cleaner"
+)
+
+var (
+	connection               rmq.Connection
+	engineDeletionEventQueue rmq.Queue
+)
+
+var (
+	connectionInitOnce               sync.Once
+	engineDeletionEventQueueInitOnce sync.Once
+)
+
+const (
+	rmqConnectionTag = "engine_rmq"
+	rmqConsumerTag   = "consumer"
+)
+
+// InitRmqQueue 初始化rmq队列
+func InitRmqQueue(debugMode bool) {
+	errChan := make(chan error, 10)
+	go logRmqErrors(errChan)
+
+	var err error
+	if connection == nil {
+		connectionInitOnce.Do(func() {
+			connection, err = rmq.OpenConnectionWithRedisClient(
+				rmqConnectionTag,
+				redis.GetDefaultMQRedisClient(),
+				errChan,
+			)
+			if err != nil {
+				log.WithError(err).Error("new rmq connection fail")
+				if !debugMode {
+					panic(err)
+				}
+			}
+		})
 	}
-	DeleteQueueKey = deleteQueueKey
+
+	if engineDeletionEventQueue == nil {
+		engineDeletionEventQueueInitOnce.Do(func() {
+			engineDeletionEventQueue, err = connection.OpenQueue("engine_deletion")
+			if err != nil {
+				log.WithError(err).Error("new rmq queue fail")
+				if !debugMode {
+					panic(err)
+				}
+			}
+		})
+	}
+}
+
+func logRmqErrors(errChan <-chan error) {
+	for err := range errChan {
+		log.WithError(err).Error("rmq error")
+	}
 }

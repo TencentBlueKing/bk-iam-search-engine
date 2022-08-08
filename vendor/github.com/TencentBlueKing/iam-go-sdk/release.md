@@ -1,6 +1,24 @@
 版本日志
 ===============
 
+## IAM v0.0.9
+
+- [NEW] 支持StringContains 操作符 #25
+- [OTHERS] 规范化所有操作符左值/右值, 并增加校验(校验失败直接False)
+
+## IAM v0.0.8
+
+- [BUGFIX] compareTwoValues will panic if got nil as input
+
+## IAM v0.0.7
+
+- [CHANGE] rename ValueEquals to ValueEqual
+
+## IAM v0.0.6
+
+- [NEW] 支持不同类型数值比较
+- [NEW] 增加ValueEquals, 用于不同类型数值比较(原 Equals 只支持相同类型对象比较)
+
 ## IAM v0.0.5
 
 - [NEW] support call apis via APIGateway

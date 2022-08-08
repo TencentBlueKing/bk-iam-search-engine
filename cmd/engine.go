@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -60,7 +60,6 @@ func Execute() {
 
 // Start ...
 func Start() {
-
 	fmt.Println("It's IAM Engine")
 
 	// init rand
@@ -78,10 +77,10 @@ func Start() {
 		fmt.Println(globalConfig)
 	}
 
-	//begin := time.Now()
-	//log.Info("begin to load all system's policies")
-	//demo.LoadAllLocalPolicies(&globalConfig.Index)
-	//log.Info("done all load! tooks:", time.Since(begin))
+	// begin := time.Now()
+	// log.Info("begin to load all system's policies")
+	// demo.LoadAllLocalPolicies(&globalConfig.Index)
+	// log.Info("done all load! tooks:", time.Since(begin))
 	// 1. init
 	initLogger()
 	// initSentry()
@@ -92,8 +91,10 @@ func Start() {
 	initGlobalIndex()
 	initSuperAppCode()
 	initRedis()
-	initRedisKeys()
 	initCaches()
+
+	// NOTE: should be after initRedis
+	initRmq()
 
 	// 2. watch the signal
 	ctx, cancelFunc := context.WithCancel(context.Background())

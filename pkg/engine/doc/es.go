@@ -16,13 +16,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/TencentBlueKing/gopkg/collection/set"
 	log "github.com/sirupsen/logrus"
 
 	"engine/pkg/client"
 	"engine/pkg/config"
 	"engine/pkg/logging/debug"
 	"engine/pkg/types"
-	"engine/pkg/util"
 )
 
 // EsEngine ...
@@ -162,21 +162,13 @@ func (e *EsEngine) BulkDeleteBySubjects(beforeUpdatedAt int64, subjects []types.
 	return e.deleteByQuery(query, logger)
 }
 
-// BulkDeleteByTemplateSubjects ...
-func (e *EsEngine) BulkDeleteByTemplateSubjects(
-	beforeUpdatedAt int64, templateID int64, subjects []types.Subject, logger *log.Entry,
-) error {
-	query := genTemplateSubjectsQuery(beforeUpdatedAt, templateID, subjects)
-	return e.deleteByQuery(query, logger)
-}
-
 func (e *EsEngine) getActionCount(system, action string) (int, error) {
 	query := types.H{
 		"query": types.H{
 			"bool": types.H{
 				"filter": []interface{}{
 					types.H{"term": types.H{"system": system}},
-					types.H{"term": types.H{"action.id": action}},
+					types.H{"term": types.H{"actions.id": action}},
 				},
 			},
 		},
@@ -271,7 +263,7 @@ type EsSearchResult struct {
 }
 
 // GetSubjects ...
-func (e *EsSearchResult) GetSubjects(allowedSubjectUIDs *util.StringSet) []types.Subject {
+func (e *EsSearchResult) GetSubjects(allowedSubjectUIDs *set.StringSet) []types.Subject {
 	subjects := make([]types.Subject, 0, len(e.anySubjects)+len(e.docSubjects))
 	for _, subject := range append(e.anySubjects, e.docSubjects...) {
 		if allowedSubjectUIDs.Has(subject.UID) {

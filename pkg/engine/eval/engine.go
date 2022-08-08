@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -17,6 +17,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/TencentBlueKing/gopkg/collection/set"
 	"github.com/TencentBlueKing/iam-go-sdk/expression"
 	log "github.com/sirupsen/logrus"
 
@@ -83,7 +84,15 @@ func (e *EvalEngine) Size(system, action string) uint64 {
 func (e *EvalEngine) BulkAdd(policies []*types.Policy) (err error) {
 	var engine *actionEvalEngine
 	for _, p := range policies {
-		engine = e.getOrCreateActionEngine(p.System, p.Action.ID)
+		// NOTE: here, should always be abac policies, len(p.Actions) == 1; the rbac policy should not show here
+		if len(p.Actions) != 1 {
+			log.Errorf(
+				"eval engine got an invalid policy with p.Actions != 1, p=`%+v`, skip, should check the source data",
+				p,
+			)
+			continue
+		}
+		engine = e.getOrCreateActionEngine(p.System, p.Actions[0].ID)
 		engine.add(p)
 	}
 	e.lastIndexTime = time.Now()
@@ -156,17 +165,6 @@ func (e *EvalEngine) BulkDeleteBySubjects(beforeUpdatedAt int64, subjects []type
 	return nil
 }
 
-// BulkDeleteByTemplateSubjects ...
-func (e *EvalEngine) BulkDeleteByTemplateSubjects(
-	beforeUpdatedAt int64, templateID int64, subjects []types.Subject, logger *log.Entry,
-) error {
-	e.engineRange(func(engine *actionEvalEngine) {
-		engine.bulkDeleteByTemplateSubjects(beforeUpdatedAt, templateID, subjects)
-	})
-	e.lastIndexTime = time.Now()
-	return nil
-}
-
 // Total ...
 func (e *EvalEngine) Total() (size uint64) {
 	e.engineRange(func(engine *actionEvalEngine) {
@@ -226,7 +224,7 @@ type EvalSearchResult struct {
 }
 
 // GetSubjects ...
-func (e *EvalSearchResult) GetSubjects(allowedSubjectUIDs *util.StringSet) []types.Subject {
+func (e *EvalSearchResult) GetSubjects(allowedSubjectUIDs *set.StringSet) []types.Subject {
 	subjects := make([]types.Subject, 0, len(e.subjects))
 	for _, subject := range e.subjects {
 		if allowedSubjectUIDs.Has(subject.UID) {
@@ -319,7 +317,7 @@ func (e *actionEvalEngine) search(
 	e.mu.RLock()
 	defer e.mu.RUnlock()
 
-	subjectUIDs := util.NewStringSet()
+	subjectUIDs := set.NewStringSet()
 	for _, p := range e.policies {
 		// 1. 如果已经过期了, 那么不计算
 		if p.ExpiredAt < req.NowTimestamp {
@@ -376,8 +374,8 @@ func (e *actionEvalEngine) bulkDelete(ids []int64) {
 	e.lastIndexTime = time.Now()
 }
 
-func toSubjectSet(subjects []types.Subject) *util.StringSet {
-	subjectSet := util.NewFixedLengthStringSet(len(subjects))
+func toSubjectSet(subjects []types.Subject) *set.StringSet {
+	subjectSet := set.NewFixedLengthStringSet(len(subjects))
 	for _, subject := range subjects {
 		subjectSet.Add(subject.Type + ":" + subject.ID)
 	}
@@ -389,18 +387,6 @@ func (e *actionEvalEngine) bulkDeleteBySubjects(beforeUpdatedAt int64, subjects 
 	subjectSet := toSubjectSet(subjects)
 	e.bulkDeleteByMatchFunc(func(policy *types.Policy) bool {
 		return subjectSet.Has(policy.Subject.UID) && policy.UpdatedAt < beforeUpdatedAt
-	})
-}
-
-// bulkDeleteByTemplateSubjects ...
-func (e *actionEvalEngine) bulkDeleteByTemplateSubjects(
-	beforeUpdatedAt int64, templateID int64, subjects []types.Subject,
-) {
-	subjectSet := toSubjectSet(subjects)
-	e.bulkDeleteByMatchFunc(func(policy *types.Policy) bool {
-		return policy.TemplateID == templateID &&
-			subjectSet.Has(policy.Subject.UID) &&
-			policy.UpdatedAt < beforeUpdatedAt
 	})
 }
 

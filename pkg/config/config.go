@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -100,12 +100,6 @@ type Redis struct {
 	MinIdleConns int
 }
 
-// RedisKey ...
-type RedisKey struct {
-	ID  string
-	Key string
-}
-
 // Config ...
 type Config struct {
 	Debug bool
@@ -125,8 +119,6 @@ type Config struct {
 	Cryptos map[string]*Crypto
 
 	Redis Redis // NOTE 需要扩展的时候变更为map
-
-	RedisKeys []RedisKey
 }
 
 // Load 从viper中读取配置文件
