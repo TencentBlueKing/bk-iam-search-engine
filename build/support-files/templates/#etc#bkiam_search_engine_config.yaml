@@ -23,7 +23,7 @@ storage:
 
 index:
   elasticsearch:
-    indexName: iam_policy
+    indexName: iam_policy_v2
     addresses:
       - http://__BK_IAM_SEARCH_ENGINE_ES7_HOST__:__BK_IAM_SEARCH_ENGINE_ES7_PORT__
     username: "__BK_IAM_SEARCH_ENGINE_ES7_USER__"

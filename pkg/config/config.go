@@ -100,12 +100,6 @@ type Redis struct {
 	MinIdleConns int
 }
 
-// RedisKey ...
-type RedisKey struct {
-	ID  string
-	Key string
-}
-
 // Config ...
 type Config struct {
 	Debug bool
