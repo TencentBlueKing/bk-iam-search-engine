@@ -90,6 +90,7 @@ type Crypto struct {
 // Redis ...
 type Redis struct {
 	ID           string
+	Type         string
 	Addr         string
 	Password     string
 	DB           int
@@ -98,6 +99,11 @@ type Redis struct {
 	WriteTimeout int
 	PoolSize     int
 	MinIdleConns int
+
+	// mode=sentinel required
+	SentinelAddr     string
+	MasterName       string
+	SentinelPassword string
 }
 
 // Config ...

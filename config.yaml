@@ -33,7 +33,8 @@ backend:
       appSecret: "a59ddb37-94ae-4d7a-b6b8-f3c255fff041"
 
 redis:
-  id: "standalone"
+  id: "mq"
+  type: "standalone"
   addr: "127.0.0.1:6379"
   password: ""
   db: 0
@@ -41,6 +42,9 @@ redis:
   dialTimeout: 3
   readTimeout: 1
   writeTimeout: 1
+  sentinelAddr: ""
+  masterName: "mymaster"
+  sentinelPassword: "" # TODO: waiting for the replace var
 
 redisKeys:
   - id: "delete_queue_key"
