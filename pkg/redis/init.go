@@ -44,9 +44,7 @@ func InitRedisClient(debugMode bool, redisConfig *config.Redis) {
 			case ModeSentinel:
 				mqRedisClient = newSentinelClient(redisConfig)
 			default:
-				if !debugMode {
-					panic(fmt.Errorf("no support redis config type: %s", redisConfig.Type))
-				}
+				panic(fmt.Errorf("no support redis config type: %s", redisConfig.Type))
 			}
 
 			_, err := mqRedisClient.Ping(context.TODO()).Result()
