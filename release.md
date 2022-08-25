@@ -1,6 +1,11 @@
+# 1.1.1
+
+- add: redis sentinel support
+
 # 1.1.0
 
 - add: rbac poicy support
+
 # 1.0.6
 
 - bugfix: create index use dynamic_templates
