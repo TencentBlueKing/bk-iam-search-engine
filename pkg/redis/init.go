@@ -13,7 +13,9 @@ package redis
 
 import (
 	"context"
+	"fmt"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -21,6 +23,11 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"engine/pkg/config"
+)
+
+const (
+	ModeStandalone = "standalone"
+	ModeSentinel   = "sentinel"
 )
 
 var mqRedisClient *redis.Client
@@ -31,7 +38,14 @@ var mqRedisClientInitOnce sync.Once
 func InitRedisClient(debugMode bool, redisConfig *config.Redis) {
 	if mqRedisClient == nil {
 		mqRedisClientInitOnce.Do(func() {
-			mqRedisClient = newRedisClient(redisConfig)
+			switch redisConfig.Type {
+			case ModeStandalone:
+				mqRedisClient = newStandaloneClient(redisConfig)
+			case ModeSentinel:
+				mqRedisClient = newSentinelClient(redisConfig)
+			default:
+				panic(fmt.Errorf("no support redis config type: %s", redisConfig.Type))
+			}
 
 			_, err := mqRedisClient.Ping(context.TODO()).Result()
 			if err != nil {
@@ -45,7 +59,7 @@ func InitRedisClient(debugMode bool, redisConfig *config.Redis) {
 	}
 }
 
-func newRedisClient(redisConfig *config.Redis) *redis.Client {
+func newStandaloneClient(redisConfig *config.Redis) *redis.Client {
 	opt := &redis.Options{
 		Addr:     redisConfig.Addr,
 		Password: redisConfig.Password,
@@ -79,8 +93,10 @@ func newRedisClient(redisConfig *config.Redis) *redis.Client {
 	}
 
 	log.Infof(
-		"connect to redis: %s[dialTimeout=%s, readTimeout=%s, writeTimeout=%s, poolSize=%d, minIdleConns=%d, idleTimeout=%s]",
+		"connect to redis: "+
+			"%s [db=%d, dialTimeout=%s, readTimeout=%s, writeTimeout=%s, poolSize=%d, minIdleConns=%d, idleTimeout=%s]",
 		opt.Addr,
+		opt.DB,
 		opt.DialTimeout,
 		opt.ReadTimeout,
 		opt.WriteTimeout,
@@ -90,6 +106,48 @@ func newRedisClient(redisConfig *config.Redis) *redis.Client {
 	)
 
 	return redis.NewClient(opt)
+}
+
+func newSentinelClient(redisConfig *config.Redis) *redis.Client {
+	sentinelAddrs := strings.Split(redisConfig.SentinelAddr, ",")
+	opt := &redis.FailoverOptions{
+		MasterName:    redisConfig.MasterName,
+		SentinelAddrs: sentinelAddrs,
+		DB:            redisConfig.DB,
+		Password:      redisConfig.Password,
+	}
+
+	if redisConfig.SentinelPassword != "" {
+		opt.SentinelPassword = redisConfig.SentinelPassword
+	}
+
+	// set default options
+	opt.DialTimeout = 2 * time.Second
+	opt.ReadTimeout = 1 * time.Second
+	opt.WriteTimeout = 1 * time.Second
+	opt.PoolSize = 20 * runtime.NumCPU()
+	opt.MinIdleConns = 10 * runtime.NumCPU()
+	opt.IdleTimeout = 3 * time.Minute
+
+	// set custom options, from config.yaml
+	if redisConfig.DialTimeout > 0 {
+		opt.DialTimeout = time.Duration(redisConfig.DialTimeout) * time.Second
+	}
+	if redisConfig.ReadTimeout > 0 {
+		opt.ReadTimeout = time.Duration(redisConfig.ReadTimeout) * time.Second
+	}
+	if redisConfig.WriteTimeout > 0 {
+		opt.WriteTimeout = time.Duration(redisConfig.WriteTimeout) * time.Second
+	}
+
+	if redisConfig.PoolSize > 0 {
+		opt.PoolSize = redisConfig.PoolSize
+	}
+	if redisConfig.MinIdleConns > 0 {
+		opt.MinIdleConns = redisConfig.MinIdleConns
+	}
+
+	return redis.NewFailoverClient(opt)
 }
 
 // GetDefaultRedisClient 获取默认的Redis实例
