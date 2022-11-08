@@ -14,6 +14,7 @@ package task
 import (
 	"sync"
 
+	"engine/pkg/metric"
 	"engine/pkg/redis"
 
 	"github.com/adjust/rmq/v4"
@@ -60,6 +61,9 @@ func InitRmqQueue(debugMode bool) {
 					panic(err)
 				}
 			}
+
+			// register metrics
+			metric.RecordRmqMetrics(connection)
 		})
 	}
 

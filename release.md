@@ -1,3 +1,7 @@
+# 1.1.2
+
+- add: add disable http switch
+
 # 1.1.1
 
 - add: redis sentinel support
