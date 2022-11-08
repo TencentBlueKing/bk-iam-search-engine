@@ -105,9 +105,16 @@ func Start() {
 	// start the sync
 	task.StartSync(ctx, globalConfig)
 
-	// 3. start the server
-	httpServer := server.NewServer(globalConfig)
-	httpServer.Run(ctx)
+	disableHttp := os.Getenv("DISABLE_HTTP")
+
+	if disableHttp != "true" {
+		// 3. start the server
+		httpServer := server.NewServer(globalConfig)
+		httpServer.Run(ctx)
+	} else {
+		<-ctx.Done()
+	}
+
 }
 
 // a context canceled when SIGINT or SIGTERM are notified
