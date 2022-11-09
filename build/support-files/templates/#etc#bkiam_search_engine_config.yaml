@@ -37,19 +37,19 @@ backend:
       appSecret: "__BK_IAM_SAAS_APP_SECRET__"
 
 redis:
-- id: "mq"
-  type: "__BK_IAM_REDIS_MODE__"
-  addr: "__BK_IAM_REDIS_ADDR__"
-  password: "__BK_IAM_REDIS_PASSWORD__"
-  db: 0
-  poolSize: 10
-  dialTimeout: 3
-  readTimeout: 1
-  writeTimeout: 1
-  # use comma ”,“ separated when multiple addr
-  sentinelAddr: "__BK_IAM_REDIS_SENTINEL_ADDR__"
-  masterName: "__BK_IAM_REDIS_SENTINEL_MASTER_NAME__"
-  sentinelPassword: "__BK_IAM_REDIS_SENTINEL_PASSWORD__"
+  - id: "mq"
+    type: "__BK_IAM_REDIS_MODE__"
+    addr: "__BK_IAM_REDIS_ADDR__"
+    password: "__BK_IAM_REDIS_PASSWORD__"
+    db: 0
+    poolSize: 10
+    dialTimeout: 3
+    readTimeout: 1
+    writeTimeout: 1
+    # use comma ”,“ separated when multiple addr
+    sentinelAddr: "__BK_IAM_REDIS_SENTINEL_ADDR__"
+    masterName: "__BK_IAM_REDIS_SENTINEL_MASTER_NAME__"
+    sentinelPassword: "__BK_IAM_REDIS_SENTINEL_PASSWORD__"
 
 redisKeys:
   - id: "delete_queue_key"
