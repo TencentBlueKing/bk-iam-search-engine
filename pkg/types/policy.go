@@ -12,9 +12,10 @@
 package types
 
 import (
-	"engine/pkg/util"
 	"fmt"
 	"strings"
+
+	"engine/pkg/util"
 
 	"github.com/TencentBlueKing/gopkg/collection/set"
 	"github.com/TencentBlueKing/iam-go-sdk/expression"

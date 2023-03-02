@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -150,8 +150,8 @@ func syncBetweenUpdatedAt(idx *Indexer, beginUpdatedAt int64, endUpdatedAt int64
 		}
 
 		// NOTE: 如果channel满了, 这里将会导致整体stuck, 无法close channel或者整体退出
-		//ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-		//defer cancel()
+		// ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		// defer cancel()
 
 		// add to chan for indexer
 		idx.BulkAdd(policies)

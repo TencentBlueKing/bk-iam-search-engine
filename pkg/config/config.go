@@ -125,6 +125,8 @@ type Config struct {
 	Cryptos map[string]*Crypto
 
 	Redis Redis // NOTE 需要扩展的时候变更为map
+
+	MetricToken string
 }
 
 // Load 从viper中读取配置文件

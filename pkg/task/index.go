@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -140,7 +140,11 @@ func (i *Indexer) run(ctx context.Context, cfg *config.Index, logger *logrus.Ent
 			batchDeleteSize := len(batchDeleteData)
 
 			if batchUpsertSize+batchDeleteSize > 0 {
-				logger.Infof("timeout and may do index, upsert size=%d, delete size=%d", len(batchUpsertData), len(batchDeleteData))
+				logger.Infof(
+					"timeout and may do index, upsert size=%d, delete size=%d",
+					len(batchUpsertData),
+					len(batchDeleteData),
+				)
 			} else {
 				if rand.Intn(10) == 0 {
 					logger.Infof("alive")

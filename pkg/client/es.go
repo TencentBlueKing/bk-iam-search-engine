@@ -73,7 +73,7 @@ func NewEsClient(cfg *config.ElasticSearch) (*EsClient, error) {
 		},
 
 		// Retry up to 5 attempts
-		//MaxRetries: 3,
+		// MaxRetries: 3,
 
 		// EnableDebugLogger: true,
 	})
@@ -85,7 +85,6 @@ func NewEsClient(cfg *config.ElasticSearch) (*EsClient, error) {
 	return &EsClient{
 		client,
 	}, nil
-
 }
 
 // NewEsPingClient ...
@@ -103,7 +102,6 @@ func NewEsPingClient(cfg *config.ElasticSearch) (*EsClient, error) {
 	return &EsClient{
 		client,
 	}, nil
-
 }
 
 // Index ...
@@ -477,7 +475,6 @@ func decodeSearchResponse(res *esapi.Response) (r types.H, err error) {
 // Ping ...
 func (c *EsClient) Ping() (*esapi.Response, error) {
 	return c.client.Ping()
-
 }
 
 // CreateIndex ...

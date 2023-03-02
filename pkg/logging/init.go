@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -28,16 +28,17 @@ var loggerInitOnce sync.Once
 
 var apiLogger *zap.Logger
 
-var componentLogger *logrus.Logger
-var syncLogger *logrus.Logger
-var esLogger *logrus.Logger
+var (
+	componentLogger *logrus.Logger
+	syncLogger      *logrus.Logger
+	esLogger        *logrus.Logger
+)
 
 // InitLogger ...
 func InitLogger(logger *config.Logger) {
 	initSystemLogger(&logger.System)
 
 	loggerInitOnce.Do(func() {
-
 		apiLogger = newZapJSONLogger(&logger.API)
 
 		syncLogger = logrus.New()
@@ -69,7 +70,7 @@ func newZapJSONLogger(cfg *config.LogConfig) *zap.Logger {
 	if err != nil {
 		panic(err)
 	}
-	//w := zapcore.AddSync(writer)
+	// w := zapcore.AddSync(writer)
 	w := &zapcore.BufferedWriteSyncer{
 		WS:            zapcore.AddSync(writer),
 		Size:          256 * 1024, // 256 kB

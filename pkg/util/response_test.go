@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -31,17 +31,16 @@ func readResponse(w *httptest.ResponseRecorder) util.Response {
 }
 
 var _ = Describe("Response", func() {
-
 	var c *gin.Context
-	//var r *gin.Engine
+	// var r *gin.Engine
 	var w *httptest.ResponseRecorder
 	BeforeEach(func() {
 		w = httptest.NewRecorder()
 		gin.SetMode(gin.ReleaseMode)
-		//gin.DefaultWriter = ioutil.Discard
+		// gin.DefaultWriter = ioutil.Discard
 		c, _ = gin.CreateTestContext(w)
-		//c, r = gin.CreateTestContext(w)
-		//r.Use(gin.Recovery())
+		// c, r = gin.CreateTestContext(w)
+		// r.Use(gin.Recovery())
 	})
 
 	It("BaseJSONResponse", func() {

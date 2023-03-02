@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -26,7 +26,6 @@ import (
 )
 
 func TestRunRun(t *testing.T) {
-
 	system := "bk_sops"
 	objSet := iam.NewObjectSet([]iam.ResourceNode{
 		{
@@ -82,7 +81,6 @@ func BenchmarkEvalOnceEqID(b *testing.B) {
 }
 
 func BenchmarkEvalIn10000ID(b *testing.B) {
-
 	system := "bk_sops"
 	objSet := iam.NewObjectSet([]iam.ResourceNode{
 		{
@@ -137,7 +135,6 @@ func BenchmarkEvalStartsWith(b *testing.B) {
 }
 
 func BenchmarkEval100000EqID(b *testing.B) {
-
 	system := "bk_sops"
 	objSet := iam.NewObjectSet([]iam.ResourceNode{
 		{
@@ -204,7 +201,6 @@ func BenchmarkEval100000Complex(b *testing.B) {
 }
 
 func BenchmarkEval100000Complex2(b *testing.B) {
-
 	system := "bk_job"
 	objSet := iam.NewObjectSet([]iam.ResourceNode{
 		{

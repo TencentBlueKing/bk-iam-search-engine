@@ -33,7 +33,7 @@ func Register(cfg *config.Config, r *gin.Engine) {
 
 	// metrics
 	metricRouter := r.Group("/metrics")
-	metricRouter.Use(middleware.TokenAuth("D@or!J4jNJ4LInub"))
+	metricRouter.Use(middleware.TokenAuth(cfg.MetricToken))
 	metricRouter.GET("", gin.WrapH(promhttp.Handler()))
 
 	pprofRouter := r.Group("/debug/pprof")
@@ -62,7 +62,6 @@ func Register(cfg *config.Config, r *gin.Engine) {
 		url := ginSwagger.URL("/swagger/doc.json")
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 	}
-
 }
 
 func pprofHandler(h http.HandlerFunc) gin.HandlerFunc {
