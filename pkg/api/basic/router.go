@@ -33,7 +33,7 @@ func Register(cfg *config.Config, r *gin.Engine) {
 
 	// metrics
 	metricRouter := r.Group("/metrics")
-	metricRouter.Use(middleware.TokenAuth(cfg.MetricToken))
+	metricRouter.Use(middleware.TokenAuth(cfg.AuthToken))
 	metricRouter.GET("", gin.WrapH(promhttp.Handler()))
 
 	pprofRouter := r.Group("/debug/pprof")
