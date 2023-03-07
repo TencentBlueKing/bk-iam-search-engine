@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -57,7 +57,10 @@ func ClientAuthMiddleware(apiGatewayPublicKey []byte) gin.HandlerFunc {
 				return
 			}
 			if len(apiGatewayPublicKey) == 0 {
-				util.UnauthorizedJSONResponse(c, "iam apigateway public key is not configured, not support request from apigateway")
+				util.UnauthorizedJSONResponse(
+					c,
+					"iam apigateway public key is not configured, not support request from apigateway",
+				)
 				c.Abort()
 				return
 			}

@@ -114,7 +114,6 @@ func Start() {
 	} else {
 		<-ctx.Done()
 	}
-
 }
 
 // a context canceled when SIGINT or SIGTERM are notified

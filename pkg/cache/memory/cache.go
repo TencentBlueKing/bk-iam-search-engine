@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -19,7 +19,8 @@ import (
 
 // NewCache ...
 func NewCache(name string, disabled bool, retrieveFunc RetrieveFunc,
-	expiration time.Duration) Cache {
+	expiration time.Duration,
+) Cache {
 	be := backend.NewMemoryBackend(name, expiration)
 	return NewBaseCache(disabled, retrieveFunc, be)
 }

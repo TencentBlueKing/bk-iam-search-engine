@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -22,7 +22,6 @@ import (
 )
 
 var _ = Describe("LocalApigwJwtClientId", func() {
-
 	It("Key", func() {
 		key := APIGatewayJWTClientIDCacheKey{
 			JWTToken: "abc",
@@ -42,11 +41,8 @@ var _ = Describe("LocalApigwJwtClientId", func() {
 	})
 
 	Describe("mock cache", func() {
-
 		BeforeEach(func() {
-			var (
-				expiration = 5 * time.Minute
-			)
+			expiration := 5 * time.Minute
 
 			retrieveFunc := func(key cache.Key) (interface{}, error) {
 				return true, nil
@@ -79,7 +75,5 @@ var _ = Describe("LocalApigwJwtClientId", func() {
 			assert.NoError(GinkgoT(), err)
 			assert.Equal(GinkgoT(), "bk_test", clientID)
 		})
-
 	})
-
 })

@@ -12,6 +12,7 @@
 package middleware
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 
@@ -61,5 +62,18 @@ func Metrics() gin.HandlerFunc {
 			"status":    status,
 			"client_id": clientID,
 		}).Observe(float64(duration / time.Millisecond))
+	}
+}
+
+// TokenAuth auth by token
+func TokenAuth(token string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		queryToken := c.DefaultQuery("token", "")
+		if queryToken != token {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		c.Next()
 	}
 }

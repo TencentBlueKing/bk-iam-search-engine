@@ -97,7 +97,7 @@ func (s *DeleteSyncer) Start(ctx context.Context, idx *Indexer) {
 	}
 	log.Info("delete sync: rmq queue start consuming success")
 
-	engineDeletionEventQueue.AddConsumerFunc(rmqConsumerTag, func(delivery rmq.Delivery) {
+	_, err = engineDeletionEventQueue.AddConsumerFunc(rmqConsumerTag, func(delivery rmq.Delivery) {
 		// get message
 		payload := delivery.Payload()
 		entry.Debugf("consumer got a message: %s", payload)
@@ -110,6 +110,10 @@ func (s *DeleteSyncer) Start(ctx context.Context, idx *Indexer) {
 			entry.WithError(err).Errorf("rmq ack payload `%s` fail", payload)
 		}
 	})
+	if err != nil {
+		log.WithError(err).Error("rmq queue add consumer func fail")
+		panic(err)
+	}
 	log.Info("delete sync: rmq queue add consumer func success")
 
 	log.Info("delete sync started")
