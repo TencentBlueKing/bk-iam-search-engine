@@ -126,7 +126,7 @@ type Config struct {
 
 	Redis Redis // NOTE 需要扩展的时候变更为map
 
-	MetricToken string
+	AuthToken string
 }
 
 // Load 从viper中读取配置文件
