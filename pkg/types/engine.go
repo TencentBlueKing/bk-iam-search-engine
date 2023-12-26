@@ -50,7 +50,7 @@ type SearchRequest struct {
 
 	SubjectType string `json:"subject_type" binding:"required,oneof=all group user" example:"all"`
 	// ! we don't support pagination, we can only fetch limit subjects at once
-	Limit int `json:"limit" binding:"min=-1,max=1000" example:"10"`
+	Limit int `json:"limit" binding:"min=-1,max=10000" example:"10"`
 
 	NowTimestamp int64
 }

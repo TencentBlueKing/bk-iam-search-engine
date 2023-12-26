@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -49,7 +49,6 @@ import "engine/cmd"
 //     3. 重建到服务可用, 之间可能很长一段时间接口不可用
 
 func main() {
-
 	cmd.Execute()
 	// router := server.NewRouter(c)
 	//

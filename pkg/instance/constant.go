@@ -20,7 +20,6 @@ import (
 // NOTE: we want to use the same config file, but different instance, so here we use env
 
 const (
-	instanceTypeAbac = "abac"
 	instanceTypeRbac = "rbac"
 
 	policyAPITypeAbac = "abac"

@@ -1,4 +1,4 @@
- /*
+/*
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
@@ -33,7 +33,7 @@ func NewRouter(cfg *config.Config) *gin.Engine {
 	// disable console log color
 	gin.DisableConsoleColor()
 
-	//router := gin.Default()
+	// router := gin.Default()
 	router := gin.New()
 
 	// MW: gin default logger
