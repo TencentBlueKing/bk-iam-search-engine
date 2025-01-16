@@ -36,7 +36,7 @@ redis:
   id: "mq"
   type: "standalone"
   addr: "127.0.0.1:6379"
-  password: ""
+  password: "12345678"
   db: 0
   poolSize: 160
   dialTimeout: 3
