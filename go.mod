@@ -14,7 +14,7 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/gofrs/uuid v4.2.0+incompatible
-	github.com/golang-jwt/jwt/v4 v4.1.0
+	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/json-iterator/go v1.1.12
 	github.com/mitchellh/mapstructure v1.4.2
 	github.com/natefinch/atomic v1.0.1
