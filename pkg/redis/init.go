@@ -13,7 +13,10 @@ package redis
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"os"
 	"runtime"
 	"strings"
 	"sync"
@@ -74,6 +77,14 @@ func newStandaloneClient(redisConfig *config.Redis) *redis.Client {
 	opt.MinIdleConns = 10 * runtime.NumCPU()
 	opt.IdleTimeout = time.Duration(3) * time.Minute
 
+	if redisConfig.TLS.Enabled {
+		var err error
+		opt.TLSConfig, err = initRedisTLS(redisConfig.TLS.CertCaFile, redisConfig.TLS.CertFile, redisConfig.TLS.CertKeyFile, redisConfig.TLS.InsecureSkipVerify)
+		if err != nil {
+			panic(fmt.Sprintf("redis init fail:%v", err))
+		}
+	}
+
 	// set custom options, from config.yaml
 	if redisConfig.DialTimeout > 0 {
 		opt.DialTimeout = time.Duration(redisConfig.DialTimeout) * time.Second
@@ -129,6 +140,14 @@ func newSentinelClient(redisConfig *config.Redis) *redis.Client {
 	opt.MinIdleConns = 10 * runtime.NumCPU()
 	opt.IdleTimeout = 3 * time.Minute
 
+	if redisConfig.TLS.Enabled {
+		var err error
+		opt.TLSConfig, err = initRedisTLS(redisConfig.TLS.CertCaFile, redisConfig.TLS.CertFile, redisConfig.TLS.CertKeyFile, redisConfig.TLS.InsecureSkipVerify)
+		if err != nil {
+			panic(fmt.Sprintf("redis init fail:%v", err))
+		}
+	}
+
 	// set custom options, from config.yaml
 	if redisConfig.DialTimeout > 0 {
 		opt.DialTimeout = time.Duration(redisConfig.DialTimeout) * time.Second
@@ -153,4 +172,36 @@ func newSentinelClient(redisConfig *config.Redis) *redis.Client {
 // GetDefaultRedisClient 获取默认的Redis实例
 func GetDefaultMQRedisClient() *redis.Client {
 	return mqRedisClient
+}
+
+func initRedisTLS(tlsCertCaFile, tlsCertFile, tlsCertKeyFile string, insecureSkipVerify bool) (*tls.Config, error) {
+
+	rootCertPool := x509.NewCertPool()
+	pem, err := os.ReadFile(tlsCertCaFile)
+	if err != nil {
+		return nil, err
+	}
+
+	if ok := rootCertPool.AppendCertsFromPEM(pem); !ok {
+
+		return nil, fmt.Errorf("failed to append CA certificate")
+	}
+
+	tlsConfig := &tls.Config{
+		RootCAs:            rootCertPool,
+		InsecureSkipVerify: insecureSkipVerify, // Skip hostname verification for IP addresses
+	}
+
+	if tlsCertFile != "" && tlsCertKeyFile != "" {
+		clientCert := make([]tls.Certificate, 0, 1)
+		certs, err := tls.LoadX509KeyPair(tlsCertFile, tlsCertKeyFile)
+		if err != nil {
+			return nil, err
+		}
+		clientCert = append(clientCert, certs)
+
+		tlsConfig.Certificates = clientCert
+	}
+
+	return tlsConfig, nil
 }

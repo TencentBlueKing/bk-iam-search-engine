@@ -14,9 +14,12 @@ package client
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"runtime"
 	"strconv"
 	"strings"
@@ -63,6 +66,17 @@ func NewEsClient(cfg *config.ElasticSearch) (*EsClient, error) {
 		RetryOnStatus: []int{502, 503, 504, 429},
 
 		EnableRetryOnTimeout: true,
+		Transport: func() http.RoundTripper {
+			if !cfg.TLS.Enabled {
+				return nil
+			}
+			tlsConfig, err := initElasticsearchTLS(cfg.TLS.CertCaFile, cfg.TLS.CertFile, cfg.TLS.CertKeyFile, cfg.TLS.InsecureSkipVerify)
+			if err != nil {
+				logging.GetESLogger().Errorf("initElasticsearchTLS fail: %w", err)
+				return nil
+			}
+			return tlsConfig
+		}(),
 
 		// Configure the backoff function
 		RetryBackoff: func(i int) time.Duration {
@@ -487,4 +501,38 @@ func (c *EsClient) CreateIndex(index string, mapping string) (*esapi.Response, e
 // IndexExists ...
 func (c *EsClient) IndexExists(index string) (*esapi.Response, error) {
 	return c.client.Indices.Exists([]string{index})
+}
+
+func initElasticsearchTLS(tlsCertCaFile, tlsCertFile, tlsCertKeyFile string, insecureSkipVerify bool) (*http.Transport, error) {
+
+	rootCertPool := x509.NewCertPool()
+	pem, err := os.ReadFile(tlsCertCaFile)
+	if err != nil {
+		return nil, err
+	}
+
+	if ok := rootCertPool.AppendCertsFromPEM(pem); !ok {
+
+		return nil, fmt.Errorf("failed to append CA certificate")
+	}
+
+	tlsConfig := &tls.Config{
+		RootCAs:            rootCertPool,
+		InsecureSkipVerify: insecureSkipVerify, // Skip hostname verification for IP addresses
+	}
+
+	if tlsCertFile != "" && tlsCertKeyFile != "" {
+		clientCert := make([]tls.Certificate, 0, 1)
+		certs, err := tls.LoadX509KeyPair(tlsCertFile, tlsCertKeyFile)
+		if err != nil {
+			return nil, err
+		}
+		clientCert = append(clientCert, certs)
+
+		tlsConfig.Certificates = clientCert
+	}
+
+	return &http.Transport{
+		TLSClientConfig: tlsConfig,
+	}, nil
 }

@@ -41,6 +41,9 @@ type ElasticSearch struct {
 	MaxRetries int      // Default: 3.
 
 	IndexName string
+
+	// TLS support
+	TLS TLS
 }
 
 // Index ...
@@ -104,6 +107,9 @@ type Redis struct {
 	SentinelAddr     string
 	MasterName       string
 	SentinelPassword string
+
+	// TLS support
+	TLS TLS
 }
 
 // Config ...
@@ -127,6 +133,16 @@ type Config struct {
 	Redis Redis // NOTE 需要扩展的时候变更为map
 
 	AuthToken string
+}
+
+type TLS struct {
+	Enabled     bool
+	CertCaFile  string
+	CertFile    string
+	CertKeyFile string
+	// for testing only, default false is secure;
+	// if set true will skip hostname verification, don't enable it in production
+	InsecureSkipVerify bool
 }
 
 // Load 从viper中读取配置文件

@@ -39,3 +39,5 @@ last_sync_time.*
 snapshot.*
 
 .vscode
+
+bkcodeai.json
