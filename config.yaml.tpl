@@ -28,6 +28,8 @@ index:
     tls:                            # tls配置
       enabled: true                 # 是否开启tls
       certCaFile: "your CA file"    # ca证书路径
+      certFile: "your cert file"            # 证书路径
+      certKeyFile: "your key file"          # 私钥路径
 
 backend:
     addr: "http://127.0.0.1:9000"
@@ -51,6 +53,8 @@ redis:
   tls:
     enabled: true
     certCaFile: "your CA file"
+    certFile: "your cert file"            # 证书路径
+    certKeyFile: "your key file"          # 私钥路径
 
 redisKeys:
   - id: "delete_queue_key"
