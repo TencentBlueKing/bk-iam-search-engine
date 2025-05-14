@@ -1,5 +1,5 @@
 /*
- * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
+ * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云 - 权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ func NewEsClient(cfg *config.ElasticSearch) (*EsClient, error) {
 	// 	return nil, err
 	// }
 	retryBackoff := backoff.NewExponentialBackOff()
-	client, err := elasticsearch.NewClient(elasticsearch.Config{
+	clientCfg := elasticsearch.Config{
 		Addresses:  cfg.Addresses,
 		Username:   cfg.Username,
 		Password:   cfg.Password,
@@ -76,7 +76,18 @@ func NewEsClient(cfg *config.ElasticSearch) (*EsClient, error) {
 		// MaxRetries: 3,
 
 		// EnableDebugLogger: true,
-	})
+	}
+
+	// TLS configuration
+	if cfg.TLS.Enabled {
+		tlsConfig, err := util.NewTLSConfig(cfg.TLS.CertCaFile, cfg.TLS.CertFile, cfg.TLS.CertKeyFile, cfg.TLS.InsecureSkipVerify)
+		if err != nil {
+			return nil, fmt.Errorf("elasticsearch tls config init: %s", err)
+		}
+		clientCfg.Transport = &http.Transport{TLSClientConfig: tlsConfig}
+	}
+
+	client, err := elasticsearch.NewClient(clientCfg)
 	if err != nil {
 		err = fmt.Errorf("error creating the client: %w", err)
 		return nil, err
@@ -204,7 +215,7 @@ func (c *EsClient) bulk(indexName string, docs []types.H, action string) error {
 
 	start := time.Now().UTC()
 
-	var numNotFound int64 = 0 // 用于记录action为delete时出现的404的数量
+	var numNotFound int64 = 0 // 用于记录 action 为 delete 时出现的 404 的数量
 	// Loop over the collection
 	for _, d := range docs {
 		var body io.Reader = nil
@@ -267,7 +278,7 @@ func (c *EsClient) bulk(indexName string, docs []types.H, action string) error {
 							errorx.ReportEvent(ev)
 						}
 
-						// 删除时如果有404 记录数量
+						// 删除时如果有 404 记录数量
 						if res.Status == http.StatusNotFound {
 							numNotFound += 1
 						}
@@ -280,7 +291,7 @@ func (c *EsClient) bulk(indexName string, docs []types.H, action string) error {
 		}
 	}
 
-	// TODO: 如果有一个失败了怎么办?  what if errors > 0
+	// TODO: 如果有一个失败了怎么办？what if errors > 0
 
 	// close the indexer
 	if err := bi.Close(context.Background()); err != nil {
@@ -294,7 +305,7 @@ func (c *EsClient) bulk(indexName string, docs []types.H, action string) error {
 		logger.Errorf(
 			"Indexed [%d] documents with [%d] errors in %s (%d docs/sec)",
 			int64(biStats.NumFlushed),
-			int64(biStats.NumFailed)-numNotFound, // 删除时如果有404不计入失败数
+			int64(biStats.NumFailed)-numNotFound, // 删除时如果有 404 不计入失败数
 			dur.Truncate(time.Millisecond),
 			int64(1000.0/float64(dur/time.Millisecond)*float64(biStats.NumFlushed)),
 		)
