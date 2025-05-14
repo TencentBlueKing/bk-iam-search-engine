@@ -1,5 +1,5 @@
 /*
- * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-权限中心检索引擎
+ * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云 - 权限中心检索引擎
  * (BlueKing-IAM-Search-Engine) available.
  * Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
@@ -33,6 +33,17 @@ type Sentry struct {
 	DSN    string
 }
 
+// TLS ...
+type TLS struct {
+	Enabled     bool
+	CertCaFile  string
+	CertFile    string
+	CertKeyFile string
+	// for testing only, default false is secure;
+	// if set true will skip hostname verification, don't enable it in production
+	InsecureSkipVerify bool
+}
+
 // ElasticSearch ...
 type ElasticSearch struct {
 	Addresses  []string // A list of Elasticsearch nodes to use.
@@ -41,6 +52,9 @@ type ElasticSearch struct {
 	MaxRetries int      // Default: 3.
 
 	IndexName string
+
+	// tls
+	TLS TLS
 }
 
 // Index ...
@@ -104,6 +118,9 @@ type Redis struct {
 	SentinelAddr     string
 	MasterName       string
 	SentinelPassword string
+
+	// tls
+	TLS TLS
 }
 
 // Config ...
@@ -124,12 +141,12 @@ type Config struct {
 
 	Cryptos map[string]*Crypto
 
-	Redis Redis // NOTE 需要扩展的时候变更为map
+	Redis Redis // NOTE 需要扩展的时候变更为 map
 
 	AuthToken string
 }
 
-// Load 从viper中读取配置文件
+// Load 从 viper 中读取配置文件
 func Load(v *viper.Viper) (*Config, error) {
 	var cfg Config
 	// 将配置信息绑定到结构体上
