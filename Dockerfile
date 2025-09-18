@@ -1,4 +1,4 @@
-FROM golang:1.22 AS builder
+FROM golang:1.22-bullseye AS builder
 
 COPY ./ /app
 WORKDIR /app
@@ -9,7 +9,7 @@ RUN make build && chmod +x ${BINARY}
 RUN mkdir -p /tmp/app/logs
 RUN cp ${BINARY} /tmp/app
 
-FROM debian:bullseye-slim
+FROM tencentos/tencentos3-minimal
 COPY --from=builder /tmp/app /app
 
 CMD ["/app/iam-search-engine", "-c", "/app/config.yaml"]
