@@ -51,7 +51,8 @@ type ElasticSearch struct {
 	Password   string   // Password for HTTP Basic Authentication.
 	MaxRetries int      // Default: 3.
 
-	IndexName string
+	IndexName            string
+	UseResponseCheckOnly bool
 
 	// tls
 	TLS TLS
