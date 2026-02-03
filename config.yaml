@@ -25,6 +25,7 @@ index:
     username: ""
     password: ""
     maxRetries: 3
+    useResponseCheckOnly: false
 
 backend:
     addr: "http://127.0.0.1:9000"

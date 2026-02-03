@@ -54,10 +54,11 @@ func NewEsClient(cfg *config.ElasticSearch) (*EsClient, error) {
 	// }
 	retryBackoff := backoff.NewExponentialBackOff()
 	clientCfg := elasticsearch.Config{
-		Addresses:  cfg.Addresses,
-		Username:   cfg.Username,
-		Password:   cfg.Password,
-		MaxRetries: cfg.MaxRetries,
+		Addresses:            cfg.Addresses,
+		Username:             cfg.Username,
+		Password:             cfg.Password,
+		MaxRetries:           cfg.MaxRetries,
+		UseResponseCheckOnly: cfg.UseResponseCheckOnly,
 
 		// Retry on 429 TooManyRequests statuses
 		RetryOnStatus: []int{502, 503, 504, 429},
