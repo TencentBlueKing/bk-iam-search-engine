@@ -1,6 +1,6 @@
 module engine
 
-go 1.18
+go 1.24.0
 
 require (
 	github.com/TencentBlueKing/gopkg v1.0.9
@@ -14,7 +14,7 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/gofrs/uuid v4.2.0+incompatible
-	github.com/golang-jwt/jwt/v4 v4.1.0
+	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/json-iterator/go v1.1.12
 	github.com/mitchellh/mapstructure v1.4.2
 	github.com/natefinch/atomic v1.0.1
@@ -24,7 +24,7 @@ require (
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.17.0
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.8.3
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.8.4
@@ -32,7 +32,7 @@ require (
 	github.com/swaggo/gin-swagger v1.3.3
 	github.com/swaggo/swag v1.7.6
 	go.uber.org/zap v1.21.0
-	golang.org/x/sync v0.3.0
+	golang.org/x/sync v0.18.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
 
@@ -88,11 +88,11 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/arch v0.6.0 // indirect
-	golang.org/x/crypto v0.22.0 // indirect
-	golang.org/x/net v0.21.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/tools v0.6.0 // indirect
+	golang.org/x/crypto v0.45.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
+	golang.org/x/tools v0.38.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/ini.v1 v1.65.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
